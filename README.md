@@ -1,3 +1,51 @@
+# Pixelamp_Ext
+Code Arduino pour la lampe Pixel créée par Heliox et par un inconnu dont je laisse le commentaire plus bas.
+
+## Généralités
+Le code original est disponible ici : https://drive.google.com/file/d/1V1oVRu5Qm_7Lyr85kFy6UF3OYe4PQe78/view
+Le code fourni par Heliox permet de générer des animations et de jolis effets.
+Toutefois, j'ai voulu aller plus loin et proposer quelques trucs en plus. Le but étant d'avoir à minima ce qui était proposé par le code original.
+
+Mais si on ajoute beaucoup de choses différentes, le potentiomètre de choix des animations devient limité. J'ai donc choisi de définir des modes.
+Dans chaque mode on a tous les effets du mode en question (Pacman / Fire / etc...).
+
+J'ai ajouté du texte défilant pour chaque mode.
+Un setup permet de définir quelques réglages :
+- Le centre de la lampe (au dessus du bouton de réglage de lumière) afin que les animations de texte et réglages soient centrées et correctement visible.
+- Inversion su potentiomètre de choix de la luminosité.
+- Inversion su potentiomètre de choix de l'animation.
+Ces choix sont conservés dans l'EEPROM de l'Arduino.
+
+Afin de développer sans avoir l'Arduino, j'ai écris un simulateur de la lampe. C'est pas super propre, et tous les fonctionalités de FastLed ne fonctioneront
+certainement pas mais c'est bien pratique de tester sans l'Arduino.
+
+## Changement de mode
+Comme il n'est pas question d'ajouter des boutons, j'ai utilisé ceux existants, à savoir le bouton de choix de la luminosité.
+droite / gauche / droite pour aller au mode suivant.
+gauche / droite / gauche pour aller au mode précédent.
+gauche / droite / gauche / droite / gauche (ou l'inverse, pas de suivant / précédent pour le Setup) pour aller au mode Setup, idem pour en ressortir.
+
+## Mode setup
+La luminosité est bloquée, le bouton de lumière permet de sélectionner la valeur, le potentiomère des animations permet de sélectionner quel réglage est à initialiser.
+Il suffit de bouger la luminosité et le réglage s'active.
+Après 4 secondes il est bloqué et clignote pendant 4 secondes avant son enregistrement. Si le bouton de luminosité est utilisé pendant laps de temps (pendant que le réglage clignote) le
+réglage est abandoné et retourne à sa position initiale sinon il est savegardé.
+Après encore 4 secondes, il retourne a l'affichage des valeurs enregistrées.
+
+# Code
+Les commentaires du code sont écris en anglais. J'ai utilisé des classes que j'avais développé auparavant.
+- surveillance des fuites mémoires en mode simulation (il reste 3 memory leaks au moment où j'écris ces lignes, je ne trouve pas pour le moment).
+- Tous les sprites sont écris en mémoire programme, ça a l'avantage de ne pas prendre sur la mémoire vive qui est limitée. De plus les couleurs sont stockées sur un seul octet pour une
+  optimisation de la mémoire et les couleurs sont mises lors du chargement du sprite (dans le code).
+- Des pointeurs partagés sont utilisés afin d'éviter les fuites mémoire.
+
+## Compilation
+Visual Studio est utilisé ainsi que le plugin vMicro qui me permet d'accéder à l'Arduino Méga.
+
+## Commentaires
+Les commentaires suivants ne sont plus complètement d'actualité. Par respect du travail effectué qui m'a servi de base et qui, pour pas mal de parties, est encore présent dans mon code,
+je laisse les commentaires du développeur qui a créé ces superbes animations.
+
 # Pixelamp
 ## Généralités
 Code réalisé pour Heliox dans le cadre de la Lampe Pixel, nom de code "pixelamp" durant le dev.
@@ -82,6 +130,4 @@ Dans le fichier `pixelamp.h` se trouvent des variantes de couleurs pour les fant
 - la valeurs de `FIRE_HEIGHT` dans `pixelamp.h`
 
 ## Le mot de la fin.
-
-Des questions concernant le code? Des idées? De nouveaux effets? Contactez Axelle, elle sait où me trouver. J'espère sincèrement que des gens réussiront à faire des trucs cools avec ce projet. Par contre, merci de citer la provenance du code si vous le réutilisez. Quand Axelle dit qu'on a bossé dessus des semaines durant, c'est vrai, et tout ça sur notre temps 'libre'. Alors merci de citer les auteurs!
-
+Des questions concernant le code ? Des idées ? De nouveaux effets ? Contactez Axelle, elle sait où me trouver. J'espère sincèrement que des gens réussiront à faire des trucs cools avec ce projet. Par contre, merci de citer la provenance du code si vous le réutilisez. Quand Axelle dit qu'on a bossé dessus des semaines durant, c'est vrai, et tout ça sur notre temps 'libre'. Alors merci de citer les auteurs !
