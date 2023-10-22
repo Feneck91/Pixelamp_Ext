@@ -7,6 +7,7 @@ Author:     Feneck91
 #include "include/animationpacman.h"
 #include "include/animationfirework.h"
 #include "include/animationfirepit.h"
+#include "include/animationfx.h"
 #include "include/animationlight.h"
 
 #ifdef SIMULATION
@@ -24,9 +25,10 @@ void setup()
     CEngineImpl<DEFAULT_CHIPSET, DEFAULT_LED_DATA_PIN, DEFAULT_COLOR_ORDER>::Init(DEFAULT_MATRIX_WIDTH, DEFAULT_MATRIX_HEIGHT, DEFAULT_POTENTIOMETER_BRIGHTNESS, DEFAULT_POTENTIOMETER_ANIMATION, DEFAULT_ARRANGE_IN_ZIGZAG);
 
     // Init Modes & Animations
-    CEngine::Instance().AddAnimationMode(shared_ptr<CAnimationMode>(new CAnimationMode(String("Pacman"),   CRGB::Yellow, new CAnimationPacMan(), nullptr)));
-    CEngine::Instance().AddAnimationMode(shared_ptr<CAnimationMode>(new CAnimationMode(String("Feux"),     CRGB::Red,    new CAnimationFirework(), new CAnimationFirepit(), nullptr)));
-    CEngine::Instance().AddAnimationMode(shared_ptr<CAnimationMode>(new CAnimationMode(String("Lumières"), CRGB::White,  new CAnimationLight(), nullptr)));
+    CEngine::Instance().AddAnimationMode(shared_ptr<CAnimationMode>(new CAnimationMode(String("Pacman"),   CRGB::Yellow,        new CAnimationPacMan(), nullptr)));
+    CEngine::Instance().AddAnimationMode(shared_ptr<CAnimationMode>(new CAnimationMode(String("Feux"),     CRGB::Red,           new CAnimationFirework(), new CAnimationFirepit(), nullptr)));
+    CEngine::Instance().AddAnimationMode(shared_ptr<CAnimationMode>(new CAnimationMode(String("Fx"),       CRGB::Aquamarine,    new CAnimationFx(), nullptr)));
+    CEngine::Instance().AddAnimationMode(shared_ptr<CAnimationMode>(new CAnimationMode(String("Lumières"), CRGB::White,         new CAnimationLight(), nullptr)));
 
     Serial.println("");
     Serial.println("===========================================");

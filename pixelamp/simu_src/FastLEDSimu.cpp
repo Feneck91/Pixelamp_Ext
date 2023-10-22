@@ -16,6 +16,77 @@ CSerial Serial;
 CFastLED FastLED;
 EEPROMClass EEPROM;
 
+/// Platform-independent alias of the fast sin implementation
+#define sin16 sin16_avr
+
+/// Fast 16-bit approximation of sin(x). This approximation never varies more than
+/// 0.69% from the floating point value you'd get by doing
+///    @code{.cpp}
+///    float s = sin(x) * 32767.0;
+///    @endcode
+///
+/// @param theta input angle from 0-65535
+/// @returns sin of theta, value between -32767 to 32767.
+int16_t sin16_avr(uint16_t theta)
+{
+    static const uint8_t data[] =
+    { 0,         0,         49, 0, 6393 % 256,   6393 / 256, 48, 0,
+      12539 % 256, 12539 / 256, 44, 0, 18204 % 256, 18204 / 256, 38, 0,
+      23170 % 256, 23170 / 256, 31, 0, 27245 % 256, 27245 / 256, 23, 0,
+      30273 % 256, 30273 / 256, 14, 0, 32137 % 256, 32137 / 256,  4 /*,0*/ };
+
+    uint16_t offset = (theta & 0x3FFF);
+
+    // AVR doesn't have a multi-bit shift instruction,
+    // so if we say "offset >>= 3", gcc makes a tiny loop.
+    // Inserting empty volatile statements between each
+    // bit shift forces gcc to unroll the loop.
+    offset >>= 3; // 0..8191
+
+    if (theta & 0x4000) offset = 2047 - offset;
+
+    uint8_t sectionX4;
+    sectionX4 = offset / 256;
+    sectionX4 *= 4;
+
+    uint8_t m;
+
+    union {
+        uint16_t b;
+        struct {
+            uint8_t blo;
+            uint8_t bhi;
+        };
+    } u;
+
+    //in effect u.b = blo + (256 * bhi);
+    u.blo = data[sectionX4];
+    u.bhi = data[sectionX4 + 1];
+    m = data[sectionX4 + 2];
+
+    uint8_t secoffset8 = (uint8_t)(offset) / 2;
+
+    uint16_t mx = m * secoffset8;
+
+    int16_t  y = mx + u.b;
+    if (theta & 0x8000) y = -y;
+
+    return y;
+}
+
+/// Fast 16-bit approximation of cos(x). This approximation never varies more than
+/// 0.69% from the floating point value you'd get by doing
+///    @code{.cpp}
+///    float s = cos(x) * 32767.0;
+///    @endcode
+///
+/// @param theta input angle from 0-65535
+/// @returns cos of theta, value between -32767 to 32767.
+int16_t cos16(uint16_t theta)
+{
+    return sin16(theta + 16384);
+}
+
 static char szPathApp[_MAX_PATH];
 
 const char* GetIniPath()

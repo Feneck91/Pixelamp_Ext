@@ -11,6 +11,16 @@ uint8_t qsub8(uint8_t i, uint8_t j);
 #include "lib8tionSimu.h"
 #include "colorpalettesSimu.h"
 
+/// Fast 16-bit approximation of cos(x). This approximation never varies more than
+/// 0.69% from the floating point value you'd get by doing
+///    @code{.cpp}
+///    float s = cos(x) * 32767.0;
+///    @endcode
+///
+/// @param theta input angle from 0-65535
+/// @returns cos of theta, value between -32767 to 32767.
+int16_t cos16(uint16_t theta);
+
 inline void* memset8(void* ptr, uint8_t value, uint16_t num)
 {
     uint8_t* pValue = static_cast<uint8_t*>(ptr);

@@ -74,6 +74,7 @@
   <ItemGroup>
     <ClInclude Include="include\animationfirepit.h" />
     <ClInclude Include="include\animationfirework.h" />
+    <ClInclude Include="include\animationfx.h" />
     <ClInclude Include="include\animationlight.h" />
     <ClInclude Include="include\animationpacman.h" />
     <ClInclude Include="include\animationsetup.h" />
@@ -105,6 +106,7 @@
     <ClCompile Include="src\animationbase.cpp" />
     <ClCompile Include="src\animationfirepit.cpp" />
     <ClCompile Include="src\animationfirework.cpp" />
+    <ClCompile Include="src\animationfx.cpp" />
     <ClCompile Include="src\animationlight.cpp" />
     <ClCompile Include="src\animationmode.cpp" />
     <ClCompile Include="src\animationpacman.cpp" />
