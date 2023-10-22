@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{2123e056-bc55-4959-829f-69a71eb47331}</ProjectGuid>
+    <RootNamespace>pixelampextsimu</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>SIMULATION;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>SIMULATION;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="include\animationfirepit.h" />
+    <ClInclude Include="include\animationfirework.h" />
+    <ClInclude Include="include\animationlight.h" />
+    <ClInclude Include="include\animationpacman.h" />
+    <ClInclude Include="include\animationsetup.h" />
+    <ClInclude Include="simu_include\colorpalettesSimu.h" />
+    <ClInclude Include="simu_include\colorSimu.h" />
+    <ClInclude Include="simu_include\colorutilsSimu.h" />
+    <ClInclude Include="simu_include\FastLEDSimu.h" />
+    <ClInclude Include="simu_include\framework.h" />
+    <ClInclude Include="include\animationbase.h" />
+    <ClInclude Include="include\animationmode.h" />
+    <ClInclude Include="include\animationtext.h" />
+    <ClInclude Include="include\engine.h" />
+    <ClInclude Include="include\shared_ptr.h" />
+    <ClInclude Include="include\sprite.h" />
+    <ClInclude Include="include\vector.h" />
+    <ClInclude Include="simu_include\lib8tionSimu.h" />
+    <ClInclude Include="simu_include\pixelampextsimu.h" />
+    <ClInclude Include="simu_include\pixeltypesSimu.h" />
+    <ClInclude Include="simu_include\Resource.h" />
+    <ClInclude Include="simu_include\scale8Simu.h" />
+    <ClInclude Include="simu_include\targetver.h" />
+    <ClInclude Include="simu_include\TrackAllocation.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="simu_src\colorpalettesSimu.cpp" />
+    <ClCompile Include="simu_src\colorutilsSimu.cpp" />
+    <ClCompile Include="simu_src\pixelampextsimu.cpp" />
+    <ClCompile Include="simu_src\TrackAllocation.cpp" />
+    <ClCompile Include="src\animationbase.cpp" />
+    <ClCompile Include="src\animationfirepit.cpp" />
+    <ClCompile Include="src\animationfirework.cpp" />
+    <ClCompile Include="src\animationlight.cpp" />
+    <ClCompile Include="src\animationmode.cpp" />
+    <ClCompile Include="src\animationpacman.cpp" />
+    <ClCompile Include="src\animationsetup.cpp" />
+    <ClCompile Include="src\animationtext.cpp" />
+    <ClCompile Include="src\engine.cpp" />
+    <ClCompile Include="simu_src\FastLEDSimu.cpp" />
+    <ClCompile Include="src\sprite.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="simu_src\pixelampextsimu.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="simu_src\pixelampextsimu.ico" />
+    <Image Include="simu_src\small.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="pixelampext.ino" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

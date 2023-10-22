@@ -1,0 +1,27 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33213.308
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pixelampext", "pixelampext.vcxproj", "{F78631EB-92E9-42BF-B739-71F0FA82A37E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|ARM = Debug|ARM
+		Release|ARM = Release|ARM
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F78631EB-92E9-42BF-B739-71F0FA82A37E}.Debug|ARM.ActiveCfg = Debug|ARM
+		{F78631EB-92E9-42BF-B739-71F0FA82A37E}.Debug|ARM.Build.0 = Debug|ARM
+		{F78631EB-92E9-42BF-B739-71F0FA82A37E}.Debug|ARM.Deploy.0 = Debug|ARM
+		{F78631EB-92E9-42BF-B739-71F0FA82A37E}.Release|ARM.ActiveCfg = Release|ARM
+		{F78631EB-92E9-42BF-B739-71F0FA82A37E}.Release|ARM.Build.0 = Release|ARM
+		{F78631EB-92E9-42BF-B739-71F0FA82A37E}.Release|ARM.Deploy.0 = Release|ARM
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {60CA7449-7C9A-49E4-8F27-6A0E3B857D5C}
+	EndGlobalSection
+EndGlobal
