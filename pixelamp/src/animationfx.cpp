@@ -69,6 +69,10 @@ CAnimationFx::CFxHueRotationDatas::CFxHueRotationDatas(uint8_t _ui8CurrentAnimat
     SetCurrentAnimation(_ui8CurrentAnimation);
 }
 
+CAnimationFx::CFxHueRotationDatas::~CFxHueRotationDatas()
+{
+}
+
 void CAnimationFx::CFxHueRotationDatas::Initialize()
 {
     m_uiHue = 0;
@@ -139,8 +143,4 @@ void CAnimationFx::CFxHueRotationDatas::DrawOneFrameHueRotation(byte _byStartHue
             CEngine::Instance().SetLedColor(true, x, y, true, true, CHSV(pixelHue, 255, 255));
         }
     }
-}
-
-CAnimationFx::CFxHueRotationDatas::~CFxHueRotationDatas()
-{
 }

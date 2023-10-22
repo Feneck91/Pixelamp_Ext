@@ -73,7 +73,7 @@ private:
     };
     
     /// <summary>
-    /// Class that manage fireworks effect.
+    /// Class that manage Hue effect.
     /// </summary>
     shared_ptr<CFxHueRotationDatas>         m_pFxHueDatas;
 

@@ -7,50 +7,112 @@
 class CAnimationPacMan : public CAnimationBase
 {
 private:
-    /// <summary>
-    /// Animations array.
-    /// </summary>
-    vector<shared_ptr<CAnimationBase>>      m_arrAnimations;
+    //=========================
+    //
+    // Hue / Rotation hue
+    //
+    //=========================
+    class CAnimationPacManDatas : public IRefCountImpl<CAnimationPacManDatas>
+    {
+        /// <summary>
+        /// Pointer on function on animation.
+        /// </summary>
+        void (CAnimationPacManDatas::* m_funcAnimation)();
+
+        /// <summary>
+        /// Animations array.
+        /// </summary>
+        vector<shared_ptr<CAnimationBase>>      m_arrAnimations;
+
+        /// <summary>
+        /// Pacman has opened mouth?
+        /// </summary>
+        bool                                    m_bIsMouthIsOpened;
+
+        /// <summary>
+        /// Sprite Pacman with opened mouth.
+        /// </summary>
+        shared_ptr<CSprite>                     m_PacmanOpenMouth;
+
+        /// <summary>
+        /// Sprite Pacman with closed mouth.
+        /// </summary>
+        shared_ptr<CSprite>                     m_PacmanClosedMouth;
+
+        /// <summary>
+        /// Sprite ghost.
+        /// </summary>
+        shared_ptr<CSprite>                     m_Ghost;
+
+        /// <summary>
+        /// Pacgum.
+        /// </summary>
+        shared_ptr<CSprite>                     m_PacGum1;
+
+        /// <summary>
+        /// Pacgum.
+        /// </summary>
+        shared_ptr<CSprite>                     m_PacGum2;
+
+        /// <summary>
+        /// Pacgum.
+        /// </summary>
+        shared_ptr<CSprite>                     m_PacGum3;
+
+        /// <summary>
+        /// Pacgum.
+        /// </summary>
+        shared_ptr<CSprite>                     m_PacGum4;
+    public:
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="_ui8CurrentAnimation">Current animation.</param>
+        CAnimationPacManDatas(uint8_t _ui8CurrentAnimation);
+
+        /// <summary>
+        /// Destructor.
+        /// </summary>
+        ~CAnimationPacManDatas();
+
+        /// <summary>
+        /// Initialize internal datas.
+        /// </summary>
+        void Initialize();
+
+        /// <summary>
+        /// Set the current animation.
+        /// 
+        /// The differents animations are palettes colors.
+        /// </summary>
+        /// <param name="_uiCurrentAnimation">The animation to set.</param>
+        void SetCurrentAnimation(uint16_t _uiCurrentAnimation);
+
+        /// <summary>
+        /// Animate FxHue.
+        /// </summary>
+        void Animate();
+    private:
+        /// <summary>
+        /// Animate packman only.
+        /// </summary>
+        void AnimatePacman();
+
+        /// <summary>
+        /// Animate Pacman chase.
+        /// </summary>
+        void AnimatePacChase();
+    };
 
     /// <summary>
-    /// Current animation.
+    /// The current animation.
     /// </summary>
-    int                                     m_iCurrentAnimation;
+    uint8_t                                 m_ui8CurrentAnimation;
 
     /// <summary>
-    /// Pacman has opened mouth?
+    /// Class that manage pacman animations.
     /// </summary>
-    bool                                    m_bIsMouthIsOpened;
-
-    /// <summary>
-    /// Sprite Pacman with opened mouth.
-    /// </summary>
-    shared_ptr<CSprite>                     m_PacmanOpenMouth;
-
-    /// <summary>
-    /// Sprite Pacman with closed mouth.
-    /// </summary>
-    shared_ptr<CSprite>                     m_PacmanClosedMouth;
-
-    /// <summary>
-    /// Pacgum.
-    /// </summary>
-    shared_ptr<CSprite>                     m_PacGum1;
-
-    /// <summary>
-    /// Pacgum.
-    /// </summary>
-    shared_ptr<CSprite>                     m_PacGum2;
-
-    /// <summary>
-    /// Pacgum.
-    /// </summary>
-    shared_ptr<CSprite>                     m_PacGum3;
-
-    /// <summary>
-    /// Pacgum.
-    /// </summary>
-    shared_ptr<CSprite>                     m_PacGum4;
+    shared_ptr<CAnimationPacManDatas>       m_pPacmanDatas;
 public:
     /// <summary>
     /// Constructor.

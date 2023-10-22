@@ -10,6 +10,60 @@
 
 //========================================================================
 // 
+//                          CAnimationPacMan
+// 
+//========================================================================
+CAnimationPacMan::CAnimationPacMan()
+{
+    m_ui8CurrentAnimation = 0;
+}
+
+CAnimationPacMan::~CAnimationPacMan()
+{
+    m_pPacmanDatas = nullptr;
+}
+
+bool CAnimationPacMan::Loop()
+{
+    if (m_pPacmanDatas.IsNotNull())
+    {
+        m_pPacmanDatas->Animate();
+    }
+    return false; // Always false
+}
+
+void CAnimationPacMan::Enter()
+{
+    m_pPacmanDatas = new CAnimationPacManDatas(m_ui8CurrentAnimation);
+}
+
+void CAnimationPacMan::Leave()
+{
+    m_pPacmanDatas = nullptr;
+}
+
+uint16_t CAnimationPacMan::GetMillisecondWait()
+{
+    return 150;
+}
+
+uint16_t CAnimationPacMan::GetNumberAnimations()
+{
+    return CAnimationBase::GetNumberAnimations() + 2;
+}
+
+void CAnimationPacMan::SetCurrentAnimation(uint16_t _uiCurrentAnimation)
+{
+    CAnimationBase::SetCurrentAnimation(_uiCurrentAnimation);
+    m_ui8CurrentAnimation = _uiCurrentAnimation;
+    if (m_pPacmanDatas.IsNotNull())
+    {
+        m_pPacmanDatas->SetCurrentAnimation(m_ui8CurrentAnimation);
+    }
+}
+
+//========================================================================
+// 
 //                          Pacman Sprites
 // 
 //========================================================================
@@ -136,27 +190,97 @@ const SpriteDefinition<4> pacGum PROGMEM
 
 //========================================================================
 // 
-//                          CAnimationPacMan
+//              CAnimationPacMan::CAnimationPacManDatas
 // 
 //========================================================================
-CAnimationPacMan::CAnimationPacMan()
+CAnimationPacMan::CAnimationPacManDatas::CAnimationPacManDatas(uint8_t _ui8CurrentAnimation)
 {
-    m_iCurrentAnimation = 0;
+    Initialize();
+    SetCurrentAnimation(_ui8CurrentAnimation);
 }
 
-CAnimationPacMan::~CAnimationPacMan()
+CAnimationPacMan::CAnimationPacManDatas::~CAnimationPacManDatas()
 {
 }
 
-bool CAnimationPacMan::Loop()
+void CAnimationPacMan::CAnimationPacManDatas::Initialize()
+{
+    m_funcAnimation = nullptr;
+}
+
+void CAnimationPacMan::CAnimationPacManDatas::SetCurrentAnimation(uint16_t _uiCurrentAnimation)
+{
+    m_PacmanOpenMouth   = nullptr;
+    m_PacmanClosedMouth = nullptr;
+    m_PacGum1           = nullptr;
+    m_PacGum2           = nullptr;
+    m_PacGum3           = nullptr;
+    m_PacGum4           = nullptr;
+    m_Ghost             = nullptr;
+
+    ColorReplacement cr;
+    cr.AddColorReplacement(ColorReplacement::stColors{ 1, (uint32_t)CRGB::Gold, });
+    cr.AddColorReplacement(ColorReplacement::stColors{ 2, (uint32_t)CRGB::Blue });
+    cr.AddColorReplacement(ColorReplacement::stColors{ 3, (uint32_t)CRGB::HotPink });
+    cr.AddColorReplacement(ColorReplacement::stColors{ 4, (uint32_t)CRGB::White });
+    cr.AddColorReplacement(ColorReplacement::stColors{ 5, (uint32_t)CRGB::DeepSkyBlue });
+    cr.AddColorReplacement(ColorReplacement::stColors{ 6, (uint32_t)CRGB::Red, });
+    cr.AddColorReplacement(ColorReplacement::stColors{ 7, (uint32_t)CRGB::Orange });
+
+    switch (_uiCurrentAnimation)
+    {
+        case 0:
+        {
+            m_bIsMouthIsOpened = true;
+
+            m_PacmanOpenMouth = pacmanOpenMouth.ToSprite(cr);
+            m_PacmanClosedMouth = pacmanClosedMouth.ToSprite(cr);
+            m_PacGum1 = pacGum.ToSprite(cr);
+            m_PacGum2 = pacGum.ToSprite(cr);
+            m_PacGum3 = pacGum.ToSprite(cr);
+            m_PacGum4 = pacGum.ToSprite(cr);
+            m_PacGum1->m_X = 1;
+            m_PacGum2->m_X = 5;
+            m_PacGum3->m_X = 9;
+            m_PacGum4->m_X = 13;
+
+            m_funcAnimation = &CAnimationPacMan::CAnimationPacManDatas::AnimatePacman;
+            break;
+        }
+        case 1:
+        {
+            m_bIsMouthIsOpened = true;
+
+            m_PacmanOpenMouth   = pacmanOpenMouth.ToSprite(cr);
+            m_PacmanClosedMouth = pacmanClosedMouth.ToSprite(cr);
+            m_Ghost             = pinkGhost.ToSprite(cr);
+
+            m_funcAnimation = &CAnimationPacMan::CAnimationPacManDatas::AnimatePacChase;
+            break;
+        }
+    }
+}
+
+void CAnimationPacMan::CAnimationPacManDatas::Animate()
 {
     CEngine::Instance().ClearAllMatrix();
 
+    if (m_funcAnimation != nullptr)
+    {
+        (this->*m_funcAnimation)();
+    }
+
+    // Done. Bring it on!
+    FastLED.show();
+}
+
+void CAnimationPacMan::CAnimationPacManDatas::AnimatePacman()
+{
     (m_bIsMouthIsOpened ? m_PacmanOpenMouth : m_PacmanClosedMouth)->ShowSprite(false, true, false);
 
     int iPacmanXPosition = m_PacmanOpenMouth->m_X % 16;
 
-    //pacgum dissapearance handling
+    // Pacgum dissapearance handling
     if (iPacmanXPosition > 2 && iPacmanXPosition < 11)
     {
         m_PacGum1->ShowSprite(false, true, false);
@@ -178,60 +302,16 @@ bool CAnimationPacMan::Loop()
 
     m_PacmanOpenMouth->MoveSprite();
     m_PacmanClosedMouth->MoveSprite();
-
-    FastLED.show();
-
-    return false; // Always false
 }
 
-void CAnimationPacMan::Enter()
+void CAnimationPacMan::CAnimationPacManDatas::AnimatePacChase()
 {
-    m_bIsMouthIsOpened = true;
+    m_Ghost->ShowSprite(false, true, false);
+    (m_bIsMouthIsOpened ? m_PacmanOpenMouth : m_PacmanClosedMouth)->ShowSprite(false, true, false);
 
-    ColorReplacement cr;
-    cr.AddColorReplacement(ColorReplacement::stColors{ 1, (uint32_t) CRGB::Gold,       });
-    cr.AddColorReplacement(ColorReplacement::stColors{ 2, (uint32_t) CRGB::Blue        });
-    cr.AddColorReplacement(ColorReplacement::stColors{ 3, (uint32_t) CRGB::HotPink     });
-    cr.AddColorReplacement(ColorReplacement::stColors{ 4, (uint32_t) CRGB::White       });
-    cr.AddColorReplacement(ColorReplacement::stColors{ 5, (uint32_t) CRGB::DeepSkyBlue });
-    cr.AddColorReplacement(ColorReplacement::stColors{ 6, (uint32_t) CRGB::Red,        });
-    cr.AddColorReplacement(ColorReplacement::stColors{ 7, (uint32_t) CRGB::Orange      });
+    m_bIsMouthIsOpened = !m_bIsMouthIsOpened;
 
-    m_PacmanOpenMouth   = pacmanOpenMouth.ToSprite(cr);
-    m_PacmanClosedMouth = pacmanClosedMouth.ToSprite(cr);
-    m_PacGum1           = pacGum.ToSprite(cr);
-    m_PacGum2           = pacGum.ToSprite(cr);
-    m_PacGum3           = pacGum.ToSprite(cr);
-    m_PacGum4           = pacGum.ToSprite(cr);
-    m_PacGum1->m_X   = 1;
-    m_PacGum2->m_X   = 5;
-    m_PacGum3->m_X   = 9;
-    m_PacGum4->m_X   = 13;
-}
-
-void CAnimationPacMan::Leave()
-{
-    m_PacmanOpenMouth   = nullptr;
-    m_PacmanClosedMouth = nullptr;
-    m_PacGum1           = nullptr;
-    m_PacGum2           = nullptr;
-    m_PacGum3           = nullptr;
-    m_PacGum4           = nullptr;
-}
-
-uint16_t CAnimationPacMan::GetMillisecondWait()
-{
-    return 150;
-}
-
-uint16_t CAnimationPacMan::GetNumberAnimations()
-{
-    uint16_t uiNumber = CAnimationBase::GetNumberAnimations();
-
-    return uiNumber + 1;
-}
-
-void CAnimationPacMan::SetCurrentAnimation(uint16_t _uiCurrentAnimation)
-{
-    CAnimationBase::SetCurrentAnimation(_uiCurrentAnimation);
+    m_PacmanOpenMouth->MoveSprite();
+    m_PacmanClosedMouth->MoveSprite();
+    m_Ghost->m_X = m_PacmanOpenMouth->m_X + 8;
 }

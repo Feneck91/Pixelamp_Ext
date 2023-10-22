@@ -103,7 +103,7 @@
     <DebuggerFlavor>VisualMicroDebugger</DebuggerFlavor>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
-    <IncludePath>C:\Users\schat\Documents\Arduino\libraries\FastLED\src;C:\Users\schat\AppData\Local\arduino15\packages\arduino\hardware\avr\1.8.6\libraries\EEPROM\src;C:\\Users\\schat\\AppData\\Local\\arduino15\\packages\\arduino\\hardware\\avr\\1.8.6\\cores\\arduino;C:\\Users\\schat\\AppData\\Local\\arduino15\\packages\\arduino\\hardware\\avr\\1.8.6\\variants\\mega;c:\users\schat\appdata\local\arduino15\packages\arduino\tools\avr-gcc\7.3.0-atmel3.6.1-arduino7\lib\gcc\avr\7.3.0\include;c:\users\schat\appdata\local\arduino15\packages\arduino\tools\avr-gcc\7.3.0-atmel3.6.1-arduino7\lib\gcc\avr\7.3.0\include-fixed;c:\users\schat\appdata\local\arduino15\packages\arduino\tools\avr-gcc\7.3.0-atmel3.6.1-arduino7\avr\include</IncludePath>
+    <IncludePath>$(ProjectDir)..\pixelamp;C:\Users\schat\Documents\Arduino\libraries\FastLED\src;C:\Users\schat\AppData\Local\arduino15\packages\arduino\hardware\avr\1.8.6\libraries\EEPROM\src;C:\\Users\\schat\\AppData\\Local\\arduino15\\packages\\arduino\\hardware\\avr\\1.8.6\\cores\\arduino;C:\\Users\\schat\\AppData\\Local\\arduino15\\packages\\arduino\\hardware\\avr\\1.8.6\\variants\\mega;c:\users\schat\appdata\local\arduino15\packages\arduino\tools\avr-gcc\7.3.0-atmel3.6.1-arduino7\lib\gcc\avr\7.3.0\include;c:\users\schat\appdata\local\arduino15\packages\arduino\tools\avr-gcc\7.3.0-atmel3.6.1-arduino7\lib\gcc\avr\7.3.0\include-fixed;c:\users\schat\appdata\local\arduino15\packages\arduino\tools\avr-gcc\7.3.0-atmel3.6.1-arduino7\avr\include</IncludePath>
     <RemoteCCompileToolExe>C:\\Users\\schat\\AppData\\Local\\arduino15\\packages\\arduino\\tools\\avr-gcc\\7.3.0-atmel3.6.1-arduino7\bin\avr-g++</RemoteCCompileToolExe>
     <RemoteCppCompileToolExe>C:\\Users\\schat\\AppData\\Local\\arduino15\\packages\\arduino\\tools\\avr-gcc\\7.3.0-atmel3.6.1-arduino7\bin\avr-g++</RemoteCppCompileToolExe>
     <ValidateArchitecture>false</ValidateArchitecture>
@@ -116,7 +116,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Users\schat\Documents\Arduino\libraries\FastLED\src;C:\Users\schat\AppData\Local\arduino15\packages\arduino\hardware\avr\1.8.6\libraries\EEPROM\src;C:\\Users\\schat\\AppData\\Local\\arduino15\\packages\\arduino\\hardware\\avr\\1.8.6\\cores\\arduino;C:\\Users\\schat\\AppData\\Local\\arduino15\\packages\\arduino\\hardware\\avr\\1.8.6\\variants\\mega;c:\users\schat\appdata\local\arduino15\packages\arduino\tools\avr-gcc\7.3.0-atmel3.6.1-arduino7\lib\gcc\avr\7.3.0\include;c:\users\schat\appdata\local\arduino15\packages\arduino\tools\avr-gcc\7.3.0-atmel3.6.1-arduino7\lib\gcc\avr\7.3.0\include-fixed;c:\users\schat\appdata\local\arduino15\packages\arduino\tools\avr-gcc\7.3.0-atmel3.6.1-arduino7\avr\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\pixelamp;C:\Users\schat\Documents\Arduino\libraries\FastLED\src;C:\Users\schat\AppData\Local\arduino15\packages\arduino\hardware\avr\1.8.6\libraries\EEPROM\src;C:\\Users\\schat\\AppData\\Local\\arduino15\\packages\\arduino\\hardware\\avr\\1.8.6\\cores\\arduino;C:\\Users\\schat\\AppData\\Local\\arduino15\\packages\\arduino\\hardware\\avr\\1.8.6\\variants\\mega;c:\users\schat\appdata\local\arduino15\packages\arduino\tools\avr-gcc\7.3.0-atmel3.6.1-arduino7\lib\gcc\avr\7.3.0\include;c:\users\schat\appdata\local\arduino15\packages\arduino\tools\avr-gcc\7.3.0-atmel3.6.1-arduino7\lib\gcc\avr\7.3.0\include-fixed;c:\users\schat\appdata\local\arduino15\packages\arduino\tools\avr-gcc\7.3.0-atmel3.6.1-arduino7\avr\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <GccToolChain>C:\\Users\\schat\\AppData\\Local\\arduino15\\packages\\arduino\\tools\\avr-gcc\\7.3.0-atmel3.6.1-arduino7\bin\avr-g++</GccToolChain>
       <CppLanguageStandard>gnu++11</CppLanguageStandard>
       <CLanguageStandard>gnu11</CLanguageStandard>
@@ -125,7 +125,7 @@
       <ForcedIncludeFiles>c:\program files\microsoft visual studio\2022\enterprise\common7\ide\extensions\ljw5z45n.oe5\Micro Platforms\default\vm-intelli-pre.h;C:\Users\schat\AppData\Local\Temp\VMBuilds\pixelampext\mega_atmega2560\Debug\.vmintelli\7fc5001c36bb4a269aa48be0e24f93a4\vm-intelli-gcc-defines.h;c:\program files\microsoft visual studio\2022\enterprise\common7\ide\extensions\ljw5z45n.oe5\Micro Platforms\default\vm-intelli-post.h;$(ProjectDir)__vm\.pixelamp.vsarduino.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <UndefineAllPreprocessorDefinitions>true</UndefineAllPreprocessorDefinitions>
       <IgnoreStandardIncludePath>true</IgnoreStandardIncludePath>
-      <PreprocessorDefinitions>_VMICRO_INTELLISENSE;__AVR_atmega2560__;__AVR_ATmega2560__;F_CPU=16000000L;ARDUINO=108010;ARDUINO_AVR_MEGA2560;ARDUINO_ARCH_AVR;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_VMICRO_INTELLISENSE;__AVR_atmega2560__;__AVR_ATmega2560__;_VMDEBUG=1;F_CPU=16000000L;ARDUINO=108010;ARDUINO_AVR_MEGA2560;ARDUINO_ARCH_AVR;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
