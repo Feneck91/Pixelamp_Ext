@@ -102,6 +102,11 @@ private:
         /// Animate Pacman chase.
         /// </summary>
         void AnimatePacChase();
+
+        /// <summary>
+        /// Animate Pacman eat phantom.
+        /// </summary>
+        void AnimatePacEat();
     };
 
     /// <summary>

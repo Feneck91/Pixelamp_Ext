@@ -258,6 +258,17 @@ void CAnimationPacMan::CAnimationPacManDatas::SetCurrentAnimation(uint16_t _uiCu
             m_funcAnimation = &CAnimationPacMan::CAnimationPacManDatas::AnimatePacChase;
             break;
         }
+        case 2:
+        {
+            m_bIsMouthIsOpened = true;
+
+            m_PacmanOpenMouth = pacmanOpenMouth.ToSprite(cr);
+            m_PacmanClosedMouth = pacmanClosedMouth.ToSprite(cr);
+            m_Ghost = pinkGhost.ToSprite(cr);
+
+            m_funcAnimation = &CAnimationPacMan::CAnimationPacManDatas::AnimatePacEat;
+            break;
+        }
     }
 }
 
@@ -305,6 +316,18 @@ void CAnimationPacMan::CAnimationPacManDatas::AnimatePacman()
 }
 
 void CAnimationPacMan::CAnimationPacManDatas::AnimatePacChase()
+{
+    m_Ghost->ShowSprite(false, true, false);
+    (m_bIsMouthIsOpened ? m_PacmanOpenMouth : m_PacmanClosedMouth)->ShowSprite(false, true, false);
+
+    m_bIsMouthIsOpened = !m_bIsMouthIsOpened;
+
+    m_PacmanOpenMouth->MoveSprite();
+    m_PacmanClosedMouth->MoveSprite();
+    m_Ghost->m_X = m_PacmanOpenMouth->m_X + 8;
+}
+
+void CAnimationPacMan::CAnimationPacManDatas::AnimatePacEat()
 {
     m_Ghost->ShowSprite(false, true, false);
     (m_bIsMouthIsOpened ? m_PacmanOpenMouth : m_PacmanClosedMouth)->ShowSprite(false, true, false);
