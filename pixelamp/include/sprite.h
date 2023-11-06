@@ -67,7 +67,7 @@ public:
     /// <summary>
     /// Constructor.
     /// </summary>
-    CSprite(uint8_t _ui8Width, uint8_t _ui8Height, uint8_t _io8X, uint8_t _io8Y, int8_t _i8MxdX, int8_t _i8MxdY, const vector<uint32_t> & _rDatas);
+    CSprite(uint8_t _ui8Width, uint8_t _ui8Height, led_coordinate _X, led_coordinate _Y, int8_t _i8MxdX, int8_t _i8MxdY, const vector<uint32_t> & _rDatas);
 
     /// <summary>
     /// Copy constructor.
@@ -80,21 +80,14 @@ public:
     /// <param name="_bIgnoreMatrixDelta">Ignore matrix delta or not.</param>
     /// <param name="_bWrapX">Wrap X or not</param>
     /// <param name="_bWrapY">Wrap Y or not</param>
+    /// <param name="_bTransparent">Don't display black pixel.</param>
     /// <returns>true if at least one pixel is visible, false else.</returns>
-    bool                        ShowSprite(bool _bIgnoreMatrixDelta, bool _bWrapX, bool _bWrapY);
+    bool                        ShowSprite(bool _bIgnoreMatrixDelta, bool _bWrapX, bool _bWrapY, bool _bTransparent = false);
 
     /// <summary>
-    /// Sprite fusion.
+    /// Revert the sprite.
     /// </summary>
-    /// <param name="_rSprite">Sprite to fusion with this.</param>
-    /// <returns>A new fusionned sprite</returns>
-    shared_ptr<CSprite>         Fusion(const CSprite & _rSprite) const;
-
-    /// <summary>
-    /// Sprite fusion with this.
-    /// </summary>
-    /// <param name="_rSprite">SPrite to fusion with this.</param>
-    void                        Fusion(const CSprite& _rSprite);
+    void                        RevertSprite();
 
     /// <summary>
     /// Move the sprite.
@@ -192,12 +185,12 @@ template <uint32_t N> struct SpriteDefinition
     /// <summary>
     /// Original X position of the sprite.
     /// </summary>
-    uint8_t             m_io8X;
+    led_coordinate      m_X;
 
     /// <summary>
     /// Original Y position of the sprite.
     /// </summary>
-    uint8_t             m_io8Y;
+    led_coordinate      m_Y;
 
     /// <summary>
     /// Move offset for X.
@@ -232,7 +225,7 @@ template <uint32_t N> struct SpriteDefinition
         {
             arrDatas.push_back(_rColorReplacement.GetColor(m_datas[iIndex]));
         }
-        return shared_ptr<CSprite>(new CSprite(m_ui8Width, m_ui8Height, m_io8X, m_io8Y, m_i8MxdX, m_i8MxdY, arrDatas));
+        return shared_ptr<CSprite>(new CSprite(m_ui8Width, m_ui8Height, m_X, m_Y, m_i8MxdX, m_i8MxdY, arrDatas));
     }
 
     /// <summary>

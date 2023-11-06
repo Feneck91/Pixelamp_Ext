@@ -234,13 +234,16 @@ CRGB * CEngine::GetLeds()
 }
 
 // Set led color from x, y
-bool CEngine::SetLedColor(bool _bIgnoreMatrixDelta, led_coordinate _X, led_coordinate _Y, bool _bWrapX, bool _bWrapY, CRGB _rgbColor)
+bool CEngine::SetLedColor(bool _bIgnoreMatrixDelta, led_coordinate _X, led_coordinate _Y, bool _bWrapX, bool _bWrapY, CRGB _rgbColor, bool _bTransparent)
 {
     bool bRet = false;
     auto uiIndex = ComputePositionFromXY(_bIgnoreMatrixDelta, _X, _Y, _bWrapX, _bWrapY);
     if (uiIndex != INVALID_INDEX)
     {
-        GetLeds()[uiIndex] = _rgbColor;
+        if (!_bTransparent || _rgbColor != CRGB::Black)
+        {
+            GetLeds()[uiIndex] = _rgbColor;
+        }
         bRet = true;
     }
 

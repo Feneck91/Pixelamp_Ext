@@ -322,8 +322,9 @@ public:
     /// <param name="_bWrapX">Wrap X?</param>
     /// <param name="_bWrapY">Wrap Y?</param>
     /// <param name="_rgbColor">Color of the led</param>
+    /// <param name="_bTransparent">Don't display black pixel.</param>
     /// <returns>true if the pixel is visible, false else.</returns>
-    bool                        SetLedColor(bool _bIgnoreMatrixDelta, led_coordinate _X, led_coordinate _Y, bool _bWrapX, bool _bWrapY, CRGB _rgbColor);
+    bool                        SetLedColor(bool _bIgnoreMatrixDelta, led_coordinate _X, led_coordinate _Y, bool _bWrapX, bool _bWrapY, CRGB _rgbColor, bool _bTransparent = false);
 
     /// <summary>
     /// Add color to current led color, computed the led address from X,Y.

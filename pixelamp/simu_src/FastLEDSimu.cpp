@@ -550,183 +550,184 @@ int analogRead(uint8_t pin)
 
 
 CFastLED::CFastLED() {
-	// clear out the array of led controllers
-	// m_nControllers = 0;
-	m_Scale = 255;
-	m_nFPS = 0;
-	m_pPowerFunc = NULL;
-	m_nPowerData = 0xFFFFFFFF;
-	srand((unsigned int) time(0)); // Initialize random generator
+    // clear out the array of led controllers
+    // m_nControllers = 0;
+    m_Scale = 255;
+    m_nFPS = 0;
+    m_pPowerFunc = NULL;
+    m_nPowerData = 0xFFFFFFFF;
+    srand((unsigned int) time(0)); // Initialize random generator
+    rand16seed = rand() % 65536;
 }
 
 CLEDController& CFastLED::addLeds(CLEDController* pLed,
-	struct CRGB* data,
-	int nLedsOrOffset, int nLedsIfOffset) {
-	int nOffset = (nLedsIfOffset > 0) ? nLedsOrOffset : 0;
-	int nLeds = (nLedsIfOffset > 0) ? nLedsIfOffset : nLedsOrOffset;
+    struct CRGB* data,
+    int nLedsOrOffset, int nLedsIfOffset) {
+    int nOffset = (nLedsIfOffset > 0) ? nLedsOrOffset : 0;
+    int nLeds = (nLedsIfOffset > 0) ? nLedsIfOffset : nLedsOrOffset;
 
-	pLed->init();
-	pLed->setLeds(data + nOffset, nLeds);
-	FastLED.setMaxRefreshRate(pLed->getMaxRefreshRate(), true);
-	return *pLed;
+    pLed->init();
+    pLed->setLeds(data + nOffset, nLeds);
+    FastLED.setMaxRefreshRate(pLed->getMaxRefreshRate(), true);
+    return *pLed;
 }
 
 void CFastLED::show(uint8_t scale)
 {
-	CLEDController* pCur = CLEDController::head();
-	while (pCur) {
-		uint8_t d = pCur->getDither();
-		if (m_nFPS < 100) { pCur->setDither(0); }
-		pCur->showLeds(scale);
-		pCur->setDither(d);
-		pCur = pCur->next();
-	}
-	countFPS();
+    CLEDController* pCur = CLEDController::head();
+    while (pCur) {
+        uint8_t d = pCur->getDither();
+        if (m_nFPS < 100) { pCur->setDither(0); }
+        pCur->showLeds(scale);
+        pCur->setDither(d);
+        pCur = pCur->next();
+    }
+    countFPS();
 }
 
 int CFastLED::count() {
-	int x = 0;
-	CLEDController* pCur = CLEDController::head();
-	while (pCur) {
-		++x;
-		pCur = pCur->next();
-	}
-	return x;
+    int x = 0;
+    CLEDController* pCur = CLEDController::head();
+    while (pCur) {
+        ++x;
+        pCur = pCur->next();
+    }
+    return x;
 }
 
 CLEDController& CFastLED::operator[](int x) {
-	CLEDController* pCur = CLEDController::head();
-	while (x-- && pCur) {
-		pCur = pCur->next();
-	}
-	if (pCur == NULL) {
-		return *(CLEDController::head());
-	}
-	else {
-		return *pCur;
-	}
+    CLEDController* pCur = CLEDController::head();
+    while (x-- && pCur) {
+        pCur = pCur->next();
+    }
+    if (pCur == NULL) {
+        return *(CLEDController::head());
+    }
+    else {
+        return *pCur;
+    }
 }
 
 void CFastLED::showColor(const struct CRGB& color, uint8_t scale)
 {
-	// If we have a function for computing power, use it!
-	if (m_pPowerFunc) {
-		scale = (*m_pPowerFunc)(scale, m_nPowerData);
-	}
+    // If we have a function for computing power, use it!
+    if (m_pPowerFunc) {
+        scale = (*m_pPowerFunc)(scale, m_nPowerData);
+    }
 
-	CLEDController* pCur = CLEDController::head();
-	while (pCur) {
-		uint8_t d = pCur->getDither();
-		if (m_nFPS < 100) { pCur->setDither(0); }
-		pCur->showColor(color, scale);
-		pCur->setDither(d);
-		pCur = pCur->next();
-	}
-	countFPS();
+    CLEDController* pCur = CLEDController::head();
+    while (pCur) {
+        uint8_t d = pCur->getDither();
+        if (m_nFPS < 100) { pCur->setDither(0); }
+        pCur->showColor(color, scale);
+        pCur->setDither(d);
+        pCur = pCur->next();
+    }
+    countFPS();
 }
 
 void CFastLED::clear(bool writeData)
 {
-	if (writeData) {
-		showColor(CRGB(0, 0, 0), 0);
-	}
-	clearData();
+    if (writeData) {
+        showColor(CRGB(0, 0, 0), 0);
+    }
+    clearData();
 }
 
 void CFastLED::clearData() {
-	CLEDController* pCur = CLEDController::head();
-	while (pCur) {
-		pCur->clearLedData();
-		pCur = pCur->next();
-	}
+    CLEDController* pCur = CLEDController::head();
+    while (pCur) {
+        pCur->clearLedData();
+        pCur = pCur->next();
+    }
 }
 
 void CFastLED::delay(unsigned long ms)
 {
-	std::this_thread::sleep_for(std::chrono::milliseconds(ms));
+    std::this_thread::sleep_for(std::chrono::milliseconds(ms));
 }
 
 void CFastLED::setTemperature(const struct CRGB& temp) {
-	CLEDController* pCur = CLEDController::head();
-	while (pCur) {
-		pCur->setTemperature(temp);
-		pCur = pCur->next();
-	}
+    CLEDController* pCur = CLEDController::head();
+    while (pCur) {
+        pCur->setTemperature(temp);
+        pCur = pCur->next();
+    }
 }
 
 void CFastLED::setCorrection(const struct CRGB& correction) {
-	CLEDController* pCur = CLEDController::head();
-	while (pCur) {
-		pCur->setCorrection(correction);
-		pCur = pCur->next();
-	}
+    CLEDController* pCur = CLEDController::head();
+    while (pCur) {
+        pCur->setCorrection(correction);
+        pCur = pCur->next();
+    }
 }
 
 void CFastLED::setDither(uint8_t ditherMode) {
-	CLEDController* pCur = CLEDController::head();
-	while (pCur) {
-		pCur->setDither(ditherMode);
-		pCur = pCur->next();
-	}
+    CLEDController* pCur = CLEDController::head();
+    while (pCur) {
+        pCur->setDither(ditherMode);
+        pCur = pCur->next();
+    }
 }
 
 /// Get the number of leds in the first controller
 /// @returns the number of LEDs in the first controller
 int CFastLED::size()
 {
-	return (*this)[0].size();
+    return (*this)[0].size();
 }
 
 /// Get a pointer to led data for the first controller
 /// @returns pointer to the CRGB buffer for the first controller
 CRGB* CFastLED::leds()
 {
-	return (*this)[0].leds();
+    return (*this)[0].leds();
 }
 
 void CFastLED::countFPS(int nFrames) {
-	static int br = 0;
-	static uint32_t lastframe = millis();
+    static int br = 0;
+    static uint32_t lastframe = millis();
 
-	if (br++ >= nFrames) {
-		uint32_t now = millis();
-		now -= lastframe;
-		if (now == 0) {
-			now = 1; // prevent division by zero below
-		}
-		m_nFPS = (br * 1000) / now;
-		br = 0;
-		lastframe = millis();
-	}
+    if (br++ >= nFrames) {
+        uint32_t now = millis();
+        now -= lastframe;
+        if (now == 0) {
+            now = 1; // prevent division by zero below
+        }
+        m_nFPS = (br * 1000) / now;
+        br = 0;
+        lastframe = millis();
+    }
 }
 
 void CFastLED::setMaxRefreshRate(uint16_t refresh, bool constrain) {
-	if (constrain) {
-		// if we're constraining, the new value of m_nMinMicros _must_ be higher than previously (because we're only
-		// allowed to slow things down if constraining)
-		if (refresh > 0) {
-			m_nMinMicros = (((uint32_t) (1000000 / refresh)) > m_nMinMicros) ? (1000000 / refresh) : m_nMinMicros;
-		}
-	}
-	else if (refresh > 0) {
-		m_nMinMicros = 1000000 / refresh;
-	}
-	else {
-		m_nMinMicros = 0;
-	}
+    if (constrain) {
+        // if we're constraining, the new value of m_nMinMicros _must_ be higher than previously (because we're only
+        // allowed to slow things down if constraining)
+        if (refresh > 0) {
+            m_nMinMicros = (((uint32_t) (1000000 / refresh)) > m_nMinMicros) ? (1000000 / refresh) : m_nMinMicros;
+        }
+    }
+    else if (refresh > 0) {
+        m_nMinMicros = 1000000 / refresh;
+    }
+    else {
+        m_nMinMicros = 0;
+    }
 }
 
 long long milliseconds_now()
 {
-	auto millisec_since_epoch = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-	return millisec_since_epoch;
+    auto millisec_since_epoch = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+    return millisec_since_epoch;
 }
 
 static long long timems_start = milliseconds_now();
 
 unsigned long millis()
 {
-	return (unsigned long)(milliseconds_now() - timems_start);
+    return (unsigned long)(milliseconds_now() - timems_start);
 }
 
 uint16_t rand16seed; // = RAND16_SEED;

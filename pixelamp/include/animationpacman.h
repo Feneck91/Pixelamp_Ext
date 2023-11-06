@@ -17,7 +17,7 @@ private:
         /// <summary>
         /// Pointer on function on animation.
         /// </summary>
-        void (CAnimationPacManDatas::* m_funcAnimation)();
+        void (CAnimationPacManDatas::*          m_funcAnimation)();
 
         /// <summary>
         /// Animations array.
@@ -38,6 +38,11 @@ private:
         /// Sprite Pacman with closed mouth.
         /// </summary>
         shared_ptr<CSprite>                     m_PacmanClosedMouth;
+
+        /// <summary>
+        /// Sprite of the ghost house.
+        /// </summary>
+        shared_ptr<CSprite>                     m_GhostHouse;
 
         /// <summary>
         /// Sprite ghost.
@@ -63,6 +68,11 @@ private:
         /// Pacgum.
         /// </summary>
         shared_ptr<CSprite>                     m_PacGum4;
+
+        /// <summary>
+        /// To manage animation.
+        /// </summary>
+        int                                     m_iNumDisplay;
     public:
         /// <summary>
         /// Constructor.
@@ -81,6 +91,12 @@ private:
         void Initialize();
 
         /// <summary>
+        /// Get the time between 2 frames.
+        /// </summary>
+        /// <returns>The number of millisecond between 2 frames (2 calls to Loop function).</returns>
+        uint16_t GetMillisecondWait() const;
+
+        /// <summary>
         /// Set the current animation.
         /// 
         /// The differents animations are palettes colors.
@@ -93,6 +109,17 @@ private:
         /// </summary>
         void Animate();
     private:
+        /// <summary>
+        /// Initialize the color replacement.
+        /// </summary>
+        /// <param name="_cr">Color replacement class.</param>
+        void InitColorReplacement(ColorReplacement& _cr);
+
+        /// <summary>
+        /// Make the initial Pac eat Animation.
+        /// </summary>
+        void InitInitialPacEat();
+
         /// <summary>
         /// Animate packman only.
         /// </summary>

@@ -22,11 +22,11 @@ CSprite::CSprite()
 {
 }
 
-CSprite::CSprite(uint8_t _ui8Width, uint8_t _ui8Height, uint8_t _io8X, uint8_t _io8Y, int8_t _i8MxdX, int8_t _i8MxdY, const vector<uint32_t> & _rDatas)
+CSprite::CSprite(uint8_t _ui8Width, uint8_t _ui8Height, led_coordinate _X, led_coordinate _Y, int8_t _i8MxdX, int8_t _i8MxdY, const vector<uint32_t> & _rDatas)
     : m_ui8Width(_ui8Width)
     , m_ui8Height(_ui8Height)
-    , m_X(_io8X)
-    , m_Y(_io8Y)
+    , m_X(_X)
+    , m_Y(_Y)
     , m_i8MxdX(_i8MxdX)
     , m_i8MxdY(_i8MxdY)
     , m_datas(_rDatas)
@@ -47,7 +47,7 @@ CSprite::CSprite(const CSprite & _ref)
 {
 }
 
-bool CSprite::ShowSprite(bool _bIgnoreMatrixDelta, bool _bWrapX, bool _bWrapY)
+bool CSprite::ShowSprite(bool _bIgnoreMatrixDelta, bool _bWrapX, bool _bWrapY, bool _bTransparent)
 {
     CEngine &rEngine = CEngine::Instance();
     bool bAteLeastOnePixelVisible = false;
@@ -58,7 +58,7 @@ bool CSprite::ShowSprite(bool _bIgnoreMatrixDelta, bool _bWrapX, bool _bWrapY)
         {
             led_coordinate nx = m_X + X;
             led_coordinate ny = m_Y + Y;
-            if (rEngine.SetLedColor(_bIgnoreMatrixDelta, nx, ny, _bWrapX, _bWrapY, CRGB(m_datas[X + (Y * m_ui8Width)])))
+            if (rEngine.SetLedColor(_bIgnoreMatrixDelta, nx, ny, _bWrapX, _bWrapY, CRGB(m_datas[X + (Y * m_ui8Width)]), _bTransparent))
             {
                 bAteLeastOnePixelVisible = true;
             }
@@ -67,27 +67,17 @@ bool CSprite::ShowSprite(bool _bIgnoreMatrixDelta, bool _bWrapX, bool _bWrapY)
     return bAteLeastOnePixelVisible;
 }
 
-/// Sprite fusion.
-shared_ptr<CSprite> CSprite::Fusion(const CSprite & _rSprite) const
+void CSprite::RevertSprite()
 {
-/*
-    m_io8X
-    CSprite<N>
-*/
-    return shared_ptr<CSprite>(new CSprite());
-}
-
-/// Sprite fusion.
-void CSprite::Fusion(const CSprite& _rSprite)
-{
-/*
-
-    uint8_t ui8width  = m_ui8Width + _rSprite.m_ui8Width;
-    uint8_t ui8Height = max(m_ui8Height, _rSprite.m_ui8Height + 1);
-    m_ui8Height = ;
-    m_io8X;
-    m_io8Y;
-*/
+    for (led_coordinate Y = 0; Y < m_ui8Height; ++Y)
+    {
+        for (led_coordinate X = 0; X < m_ui8Width / 2; ++X)
+        {
+            auto rgbColor = m_datas[X + (Y * m_ui8Width)];
+            m_datas[X + (Y * m_ui8Width)] = m_datas[m_ui8Width - X - 1 + (Y * m_ui8Width)];
+            m_datas[m_ui8Width - X - 1 + (Y * m_ui8Width)] = rgbColor;
+        }
+    }
 }
 
 void CSprite::MoveSprite()
