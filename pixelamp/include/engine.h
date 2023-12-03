@@ -25,7 +25,7 @@
 #define POT_BRIGHTNESS_MAX                      1023
 
 #define MIN_BRIGHTNESS                          0
-#define MAX_BRIGHTNESS                          255
+#define MAX_BRIGHTNESS                          150 // Can be changed to 255 but ONLY if 8A power supply is possible (not just 4A)
 
 // Indicate the current mode index is not set
 #define INDEX_MODE_NOMODE                       255
@@ -93,7 +93,7 @@ private:
         uint8_t                                 m_ui8StartValue;
 
         /// <summary>
-        /// .
+        /// To know how many up/down is actually done (3 = mode / 5 = setup).
         /// </summary>
         uint8_t                                 m_ui8ModeCount;
     }                                       m_ModeChanging;
