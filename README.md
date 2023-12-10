@@ -2,8 +2,8 @@
 Code Arduino pour la lampe Pixel créée par Heliox et par un inconnu dont je laisse le commentaire plus bas.
 
 ## Version (Utiliser les Tags)
-**1.0** : Première version utilisant le nouveau moteur et les modes (Pacman / Fx / Lumières / etc).
-**2.0** : (en préparation) : possibilité de plier le rubant en ignorant une led en haut et en bas (non éclairée et pas dans une case de la lampe).
+- **1.0** : Première version utilisant le nouveau moteur et les modes (Pacman / Fx / Lumières / etc).
+- **2.0** : (en préparation) : possibilité de plier le rubant en ignorant une led en haut et en bas (non éclairée et pas dans une case de la lampe).
 Ceci permettra d'éviter de couper puis soufer le rubant (très long à faire), très complexe a mettre dans la lampe et provoque des cassures, des faux contacts.
 En pliant rubant en haut et en bas, on évite ces soudures et les faux contacts (en tout cas c'est mon espoir) mais il faut laisser une led non utilisée à chaque fois pour que la led suivante soit correctement au milieu de la case.
 Bref, après un échec pour finir la lampe, je commande un nouveau ruban et je modifie le code pour faire un nouvel essai.
