@@ -28,7 +28,7 @@ void setup()
     CEngine::Instance().AddAnimationMode(shared_ptr<CAnimationMode>(new CAnimationMode(String("Pacman"),   CRGB::Yellow,        new CAnimationPacMan(), nullptr)));
     CEngine::Instance().AddAnimationMode(shared_ptr<CAnimationMode>(new CAnimationMode(String("Feux"),     CRGB::Red,           new CAnimationFirework(), new CAnimationFirepit(), nullptr)));
     CEngine::Instance().AddAnimationMode(shared_ptr<CAnimationMode>(new CAnimationMode(String("Fx"),       CRGB::Aquamarine,    new CAnimationFx(), nullptr)));
-    CEngine::Instance().AddAnimationMode(shared_ptr<CAnimationMode>(new CAnimationMode(String("Lumières"), CRGB::White,         new CAnimationLight(), nullptr)));
+    CEngine::Instance().AddAnimationMode(shared_ptr<CAnimationMode>(new CAnimationMode(String("LumiÃ¨res"), CRGB::White,         new CAnimationLight(), nullptr)));
 
     Serial.println("");
     Serial.println("===========================================");
