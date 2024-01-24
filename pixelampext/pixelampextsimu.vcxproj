@@ -78,6 +78,8 @@
     <ClInclude Include="include\animationlight.h" />
     <ClInclude Include="include\animationpacman.h" />
     <ClInclude Include="include\animationsetup.h" />
+    <ClInclude Include="include\enginedefines.h" />
+    <ClInclude Include="include\pixellampchipset.h" />
     <ClInclude Include="simu_include\colorpalettesSimu.h" />
     <ClInclude Include="simu_include\colorSimu.h" />
     <ClInclude Include="simu_include\colorutilsSimu.h" />
@@ -114,6 +116,7 @@
     <ClCompile Include="src\animationtext.cpp" />
     <ClCompile Include="src\engine.cpp" />
     <ClCompile Include="simu_src\FastLEDSimu.cpp" />
+    <ClCompile Include="src\pixellampchipset.cpp" />
     <ClCompile Include="src\sprite.cpp" />
   </ItemGroup>
   <ItemGroup>

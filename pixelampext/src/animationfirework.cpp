@@ -241,7 +241,7 @@ void CAnimationFirework::CFireworkEffectDatas::Dot::Move(CAnimationFirework::CFi
                 {
                     // boom
                     FastLED.showColor(CRGB::White);
-                    //FastLED.delay(1);
+                    FastLED.delay(1);
                     FastLED.showColor(CRGB::Black);
                 }
 

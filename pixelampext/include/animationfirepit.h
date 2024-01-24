@@ -1,5 +1,6 @@
 #pragma once
 #include "animationbase.h"
+#include "shared_ptr.h"
 
 /// <summary>
 /// Class that manage firewpit animations.

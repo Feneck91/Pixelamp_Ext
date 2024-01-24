@@ -548,7 +548,6 @@ int analogRead(uint8_t pin)
     return iValue;
 }
 
-
 CFastLED::CFastLED() {
     // clear out the array of led controllers
     // m_nControllers = 0;

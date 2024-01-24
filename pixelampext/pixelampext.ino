@@ -3,7 +3,9 @@ Name:       pixelampext.ino
 Created:    22/09/2023 11:05:13
 Author:     Feneck91
 */
+#include "include/pixellampchipset.h"
 #include "include/engine.h"
+#include "include/pixellampchipset.h"
 #include "include/animationpacman.h"
 #include "include/animationfirework.h"
 #include "include/animationfirepit.h"

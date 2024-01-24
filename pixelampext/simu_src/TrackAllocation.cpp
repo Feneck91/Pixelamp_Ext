@@ -14,6 +14,7 @@
 
 #define  _AFXDLL
 #include <afxcoll.h>
+
 #include "../simu_include/TrackAllocation.h"
 
 // Obligatoire de retirer la définition du new : sinon, remplacé par la macro
@@ -26,6 +27,7 @@ void* operator new(size_t nSize, LPCSTR _pszFileName, int _iNumLine)
 {
     return OperatorNewPrivate(nSize, _pszFileName, _iNumLine);
 }
+
 void* operator         new[](size_t nSize)
 {
     return OperatorNewPrivate(nSize, "Fichier inconnu (STL ?)", 0);
@@ -221,7 +223,7 @@ void OperatorDeletePrivate(void* ptr,const char* pszFileName,int iNumLine)
     localSearch.m_pAllocatedMem=ptr;
     tdListeTrackAllocation::iterator itFind = g_pTrackAllocationList->find(&localSearch);
 
-    if (itFind!=g_pTrackAllocationList->end())
+    if (itFind != g_pTrackAllocationList->end())
     {
         free(*itFind);                          // Destruction de la classe allouée
         g_pTrackAllocationList->erase(itFind);  // Suppression de la liste
@@ -229,7 +231,7 @@ void OperatorDeletePrivate(void* ptr,const char* pszFileName,int iNumLine)
     // Sinon, ne rien faire, ce cas arrive très souvent
     // else
     // {
-    //    GFX_EXT_TOOLS_ASSERT_GFXEXTTOOLS(FALSE,"Erreur, bloc allocation non trouvée");
+    //    ASSERT(FALSE,"Erreur, bloc allocation non trouvée");
     // }
 
     free(ptr);  // destruction zone allouée

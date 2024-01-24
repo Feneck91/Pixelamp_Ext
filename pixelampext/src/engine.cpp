@@ -9,7 +9,7 @@
 
 //========================================================================
 // 
-//                             CEngine
+//                                 CEngine
 // 
 //========================================================================
 // Unique instance
@@ -30,6 +30,7 @@ CEngine::CEngine()
     , m_pLeds(nullptr)
     , m_bInvertPotBrightness(false)
     , m_bInvertPotAnimation(false)
+    , m_ModeChanging()
 {
 }
 
@@ -40,8 +41,7 @@ CEngine::~CEngine()
     if (m_pLeds != nullptr)
     {
         delete []m_pLeds;
-    }
-}
+    }}
 
 // Get the unique instance.
 CEngine & CEngine::Instance()
@@ -66,6 +66,21 @@ uint8_t CEngine::GetMatrixWidth() const
 uint8_t CEngine::GetMatrixHeight() const
 {
     return m_ui8MatrixHeight;
+}
+
+uint8_t CEngine::GetRealMatrixWidth() const
+{
+    return m_ui8MatrixWidth;
+}
+
+uint8_t CEngine::GetRealMatrixHeight() const
+{
+#ifdef NO_SOLDERING_LED
+    // Defines that indicate that the first led is not used, the first is the les 1
+    return m_ui8MatrixHeight + 2;
+#else
+    return m_ui8MatrixHeight;
+#endif
 }
 
 uint8_t CEngine::GetPinBrightness() const
@@ -187,7 +202,7 @@ void CEngine::Init(uint8_t _ui8MatrixWidth, uint8_t _ui8MatrixHeight, uint8_t _u
     m_uiPinBrightness                   = _uiPinBrightness;
     m_uiPinAnimation                    = _uiPinAnimation;
     m_bArrangeInZigZag                  = _bArrangeInZigZag;
-    m_pLeds                             = new CRGB[GetNumLeds()];
+    m_pLeds                             = new CRGB[GetRealNumLeds()];
     m_ModeChanging.m_lastTimeBrightness = 0;
     m_ModeChanging.m_bChangeModeUp      = true;
     m_ModeChanging.m_ui8StartValue      = 0;
@@ -225,7 +240,24 @@ void CEngine::AddAnimationMode(shared_ptr<CAnimationMode> _pAnimationMode)
 
 uint16_t CEngine::GetNumLeds() const
 {
-    return m_ui8MatrixWidth * m_ui8MatrixHeight;
+    return GetMatrixWidth() * GetMatrixHeight();
+}
+
+uint16_t CEngine::GetRealNumLeds() const
+{
+#ifdef NO_SOLDERING_LED
+    return (GetRealMatrixWidth() * GetRealMatrixHeight() - GetRealMatrixWidth())
+        // Initialize FastLed chipset
+    #ifdef NO_SOLDERING_FIRST_LED_IS_NOT_USED
+        + 1 // The first (0 index) is not used, so we need one led more
+    #endif
+    #ifdef NO_SOLDERING_LAST_LED_DOES_NOT_EXIST
+        - 1
+    #endif
+        ;
+#else
+    return GetMatrixWidth() * GetMatrixHeight();
+#endif
 }
 
 CRGB * CEngine::GetLeds()
@@ -266,17 +298,17 @@ bool CEngine::AddLedColor(bool _bIgnoreMatrixDelta, led_coordinate _X, led_coord
 
 void CEngine::SetAllLedsColor(CRGB _rgbColor)
 {
-    for (uint16_t uiIndex = 0; uiIndex < GetNumLeds(); ++uiIndex)
+    for (uint16_t uiIndex = 0; uiIndex < GetRealNumLeds(); ++uiIndex)
     {
         GetLeds()[uiIndex] = _rgbColor;
     }
 }
 
 // Compute led position
-uint16_t CEngine::ComputePositionFromXY(bool _bIgnoreMatrixDelta, led_coordinate _X, led_coordinate _Y, bool _bWrapX, bool _bWrapY)
+uint16_t CEngine::ComputePositionFromXY(bool _bIgnoreMatrixDelta, led_coordinate _X, led_coordinate _Y, bool _bWrapX, bool _bWrapY, bool _bIgnoreNoSoldering)
 {
-    const uint8_t matrixMaxX = m_ui8MatrixWidth - 1;
-    const uint8_t matrixMaxY = m_ui8MatrixHeight - 1;
+    const uint8_t matrixMaxX = GetMatrixWidth() - 1;
+    const uint8_t matrixMaxY = GetMatrixHeight() - 1;
 
     //comment this line to put [0;0] on bottom-left-hand corner.
     //y = (kMatrixHeight-1) - y;
@@ -289,31 +321,32 @@ uint16_t CEngine::ComputePositionFromXY(bool _bIgnoreMatrixDelta, led_coordinate
     {
         if (_X > matrixMaxX)
         {
-            _X = _X % m_ui8MatrixWidth;
+            _X = _X % GetMatrixWidth();
         }
         else if (_X < 0)
         {
-            _X = _X % m_ui8MatrixWidth;
-            _X += m_ui8MatrixWidth;
+            _X = _X % GetMatrixWidth();
+            _X += GetMatrixWidth();
         }
     }
     if (_bWrapY)
     {
         if (_Y > matrixMaxY)
         {
-            _Y = _Y % m_ui8MatrixHeight;
+            _Y = _Y % GetMatrixHeight();
         }
         else if (_Y < 0)
         {
-            _Y = _Y % m_ui8MatrixHeight;
-            _Y += m_ui8MatrixHeight;
+            _Y = _Y % GetMatrixHeight();
+            _Y += GetMatrixHeight();
         }
     }
 
     // If LEDs are arranged in zigzag
+    led_coordinate _YOrigin = _Y;
     if (m_bArrangeInZigZag && _X % 2 == 0)
     {
-        _Y = (m_ui8MatrixHeight - 1) - _Y;
+        _Y = (GetMatrixHeight() - 1) - _Y;
     }
 
     if (!_bIgnoreMatrixDelta && !_bWrapX)
@@ -332,11 +365,87 @@ uint16_t CEngine::ComputePositionFromXY(bool _bIgnoreMatrixDelta, led_coordinate
         }
     }
 
-    return (   (!_bWrapX && (_X > matrixMaxX || _X < 0))
-            || (!_bWrapY && (_Y > matrixMaxY || _Y < 0))
-           )
-        ? INVALID_INDEX
-        : (_X * m_ui8MatrixHeight) + _Y;
+    if (   (!_bWrapX && (_X > matrixMaxX || _X < 0))
+        || (!_bWrapY && (_Y > matrixMaxY || _Y < 0))
+       )
+    {
+        return INVALID_INDEX;
+    }
+
+#ifdef NO_SOLDERING_LED
+    return _bIgnoreNoSoldering
+            ? (_X * GetMatrixHeight()) + _Y
+            : ComputePositionFromRealXY(_X, _YOrigin + 1);
+#else
+    return (_X * GetRealMatrixHeight()) + _Y;
+#endif
+}
+
+uint16_t CEngine::ComputePositionFromRealXY(led_coordinate _X, led_coordinate _Y)
+{
+    const uint8_t matrixMaxX = GetRealMatrixWidth() - 1;
+    const uint8_t matrixMaxY = GetRealMatrixHeight() - 1;
+
+    // If LEDs are arranged in zigzag
+    led_coordinate _YOrigin = _Y;
+    if (m_bArrangeInZigZag && _X % 2 == 0)
+    {
+        _Y = (GetRealMatrixHeight() - 1) - _Y;
+    }
+
+    if (   (_X > matrixMaxX || _X < 0)
+        || (_Y > matrixMaxY || _Y < 0)
+        || GetLedStatusFromRealPosition(_X, _YOrigin) == eLedStatus::eLedStatusNotExist
+       )
+    {
+        return INVALID_INDEX;
+    }
+
+#ifdef NO_SOLDERING_LED
+    // The position is based on x / led size that are not the real led size
+    // Here, we must compute the real x / y position into the real size
+#ifdef NO_SOLDERING_FIRST_LED_IS_NOT_USED
+    uint16_t ui16Index = (_X * GetRealMatrixHeight()) - _X + _Y;
+#else
+    uint16_t ui16Index = (_X * GetRealMatrixHeight()) - _X + _Y - 1;
+#endif
+
+    return ui16Index;
+#else
+    return (_X * GetRealMatrixHeight()) + _Y;
+#endif
+}
+
+CEngine::eLedStatus CEngine::GetLedStatusFromRealPosition(led_coordinate _realPositionX, led_coordinate _realPositionY)
+{
+    eLedStatus statusRet = eLedStatus::eLedStatusNormal;
+#ifdef NO_SOLDERING_LED
+    #ifdef NO_SOLDERING_FIRST_LED_IS_NOT_USED
+    // In this case, the first of the led ribbon is not in the first box (it is the second one) and is just not used, must be  always black
+    if (_realPositionX == 0 && _realPositionY == GetRealMatrixHeight() - 1)
+    {
+        statusRet = eLedStatus::eLedStatusIgnored;
+    }
+    else
+    #endif
+    #ifdef NO_SOLDERING_LAST_LED_DOES_NOT_EXIST
+    if (_realPositionX  == GetRealMatrixWidth() - 1 && (   ( GetRealMatrixWidth() % 2 == 0 && _realPositionY == GetRealMatrixHeight() - 1 )
+                                                        || ( GetRealMatrixWidth() % 2 == 1 && _realPositionY == 0                         )))
+    {
+        statusRet = eLedStatus::eLedStatusNotExist;
+    }
+    else
+    #endif
+    if (_realPositionY == 0 || _realPositionY == GetRealMatrixHeight() - 1 )
+    {
+        statusRet = (   (_realPositionY == 0                         && _realPositionX % 2 == 1)
+                     || (_realPositionY == GetRealMatrixHeight() - 1 && _realPositionX % 2 == 0))
+            ? eLedStatus::eLedStatusNotExist
+            : eLedStatus::eLedStatusIgnored;
+    }
+
+#endif
+    return statusRet;
 }
 
 // Clear all led.
@@ -344,7 +453,7 @@ void CEngine::ClearAllMatrix()
 {
     uint16_t iNum;
 
-    for (iNum = 0; iNum < GetNumLeds(); ++iNum)
+    for (iNum = 0; iNum < GetRealNumLeds(); ++iNum)
     {
         GetLeds()[iNum] = CRGB(0, 0, 0);
     }

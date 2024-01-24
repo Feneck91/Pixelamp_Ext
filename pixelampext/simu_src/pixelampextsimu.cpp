@@ -1,6 +1,7 @@
 // pixelampextsimu.cpp : Définit le point d'entrée de l'application.
 //
 
+#include "../include/pixellampchipset.h"
 #include "../simu_include/framework.h"
 #include "../simu_include/pixelampextsimu.h"
 #include "../pixelampext.ino"
@@ -23,7 +24,9 @@
 #endif
 */
 
-#define     ID_TRACKBAR     (WM_USER + 100)
+#define     ID_TRACKBAR_ANIMATION                   (WM_USER + 100)
+#define     ID_TRACKBAR_BRIGHTNESS                  (WM_USER + 101)
+#define     ID_CHECKBOX_DISPLAY_LED_INDEX           (WM_USER + 102)
 
 // CreateTrackbar - creates and initializes a trackbar. 
 // 
@@ -32,7 +35,8 @@
 //
 HWND WINAPI CreateTrackbar(
     HINSTANCE hInst,
-    HWND hwndDlg,  // handle of dialog box (parent window) 
+    HWND hwndDlg,  // handle of dialog box (parent window)
+    uint16_t IdCtrl,
     int iValue,
     int x,
     int y,
@@ -49,7 +53,7 @@ HWND WINAPI CreateTrackbar(
         x, y,                                                           // position 
         200, 40,                                                        // size 
         hwndDlg,                                                        // parent window 
-        NULL,                                                           // control identifier 
+        (HMENU) IdCtrl,                                                 // control identifier 
         hInst,                                                          // instance 
         NULL                                                            // no WM_CREATE parameter 
     );
@@ -78,22 +82,80 @@ HWND WINAPI CreateTrackbar(
 #define EEPROM_ADDRESS_CURRENT_BRIGHTNESS               100 // Be careful : use 2 ADRESS !!
 #define EEPROM_ADDRESS_CURRENT_ANIMATION                102 // Be careful : use 2 ADRESS !!
 
-class ArduinoSimulator : public ISimulatorController<GRB>
+ISimulatorController<DEFAULT_COLOR_ORDER>* ISimulatorController<DEFAULT_COLOR_ORDER>::m_pSimulator = nullptr;
+
+class ArduinoSimulator : public ISimulatorController<DEFAULT_COLOR_ORDER>
 {
 private:
+    /// <summary>
+    /// Handle of the window.
+    /// </summary>
     HWND                        m_hWnd;
+
+    /// <summary>
+    /// Singleton of this ArduinoSimulator.
+    /// </summary>
     static ArduinoSimulator *   m_pInstance;
-    unsigned __int64            m_nIDTimerEvent;
-    HWND                        m_hWndBrightness;
-    HWND                        m_hWndAnimation;
+
+    /// <summary>
+    // Must quit thread?
+    /// </summary>
+    bool                        m_bMustQuit;
+
+    /// <summary>
+    /// Thread handle
+    /// </summary>
+    HANDLE                      m_hThread;
+
+    /// <summary>
+    /// Brightness.
+    /// </summary>
     int                         m_iValueBrightness;
+
+    /// <summary>
+    /// Animation value.
+    /// </summary>
     int                         m_iValueAnimation;
 
-private:
-    virtual ~ArduinoSimulator();
-public:
+    /// <summary>
+    /// To manage thread.
+    /// 
+    /// Protect data to read / write.
+    /// </summary>
+    CRITICAL_SECTION            m_CriticalSection;
+
+    /// <summary>
+    /// Handle to brightness window.
+    /// </summary>
+    HWND                        m_hWndBrightness;
+
+    /// <summary>
+    /// Handle to animation window.
+    /// </summary>
+    HWND                        m_hWndAnimation;
+
+    /// <summary>
+    /// Handle to check box to display led number.
+    /// </summary>
+    HWND                        m_hWndDisplayLedsNumber;
+
+    /// <summary>
+    /// Should display led number?
+    /// </summary>
+    bool                        m_bIsDisplayLedsNumber;
+
+    /// <summary>
+    /// Pointer on LEDs array value used to displayed.
+    /// </summary>
     CRGB *                      m_pLeds;
 
+private:
+    /// <summary>
+    /// virtual destructor.
+    /// </summary>
+    virtual ~ArduinoSimulator();
+
+public:
     /// <summary>
     /// Constructor.
     /// </summary>
@@ -101,9 +163,51 @@ public:
     /// <param name="_hwnd">Handle of the parent window</param>
     ArduinoSimulator(HINSTANCE _hInstance, HWND _hwnd);
 
+    /// <summary>
+    /// Pointer on LEDs array value used to displayed.
+    /// </summary>
+    CRGB*                       GetLeds();
+
+    /// <summary>
+    /// Should display led number?
+    /// </summary>
+    /// <returns>true if must display led number, false else.</returns>
+    bool                        IsDisplayLedsNumber() const;
+
+    /// <summary>
+    /// Get the critical section.
+    /// </summary>
+    /// <returns></returns>
+    CRITICAL_SECTION &          GetCriticalSection();
+
+    /// <summary>
+    /// Initialize the class.
+    /// 
+    /// Called by the led chipset when it is initialized.
+    /// </summary>
     virtual void                init() override;
-    virtual void                showPixels(PixelController<GRB>& pixels) override;
-    void                        OnTimer();
+
+    /// <summary>
+    /// Called by the framework simulation when pixels are displayed.
+    /// </summary>
+    /// <param name="_rPpixels">Range of leds to display</param>
+    virtual void                onShowPixels(PixelController<DEFAULT_COLOR_ORDER>& _rPpixels) override;
+
+    /// <summary>
+    /// Indicate if the thread that manage the engine must be quit.
+    /// </summary>
+    /// <returns>true if should quit, false else.</returns>
+    bool                        shouldQuit() const;
+
+    /// <summary>
+    /// Compute infos for RECT leds.
+    /// </summary>
+    /// <param name="_piLeft">Get the left position if pointer is pass into this parameter.</param>
+    /// <param name="_piTop">Get the top position if pointer is pass into this parameter.</param>
+    /// <param name="_piWidth">Get the width if pointer is pass into this parameter.</param>
+    /// <param name="_piHeight">Get the height if pointer is pass into this parameter.</param>
+    /// <returns></returns>
+    RECT                        ComputeRectLeds(int* _piLeft, int* _piTop, int* _piWidth, int* _piHeight) const;
 
     /// <summary>
     /// Get the analog value.
@@ -135,6 +239,13 @@ public:
     static int                  StaticGetAnalogValue(void * _pContext, uint8_t _iPin);
 
     /// <summary>
+    /// Manage button notifications.
+    /// </summary>
+    /// <param name="wParam">Notification (BN_CLICKED).</param>
+    /// <param name="hwnd">Window's handle.</param>
+    VOID WINAPI                 ButtonNotification(WPARAM wParam, HWND hwnd);
+        
+    /// <summary>
     /// TBNotifications - handles trackbar notifications received 
     //  in the wParam parameter of WM_HSCROLL. This function simply  ensures that the slider remains within the selection range.
     /// </summary>
@@ -144,10 +255,84 @@ public:
     /// <param name="iSelMax">maximum value of trackbar selection</param>
     VOID WINAPI                 TBNotifications(WPARAM wParam, HWND hwndTrack, UINT iSelMin, UINT iSelMax);
 
-    static int                  ReadByteEEPROM(int idx); // 1 address
-    static int                  ReadIntEEPROM(int idx);  // 2 address
+    /// <summary>
+    /// Simultate EEPROM read.
+    /// 
+    /// Read one bit only (8 bits).
+    /// </summary>
+    /// <param name="idx">Index of adress to read.</param>
+    /// <returns>The value of this EEPROM value at this address.</returns>
+    static int                  ReadByteEEPROM(int idx);
+
+    /// <summary>
+    /// Simultate EEPROM read.
+    /// 
+    /// Read two bits only (16 bits).
+    /// </summary>
+    /// <param name="idx">Index of adress to read.</param>
+    /// <returns>The value of this EEPROM value at this address & address + 1.</returns>
+    static int                  ReadIntEEPROM(int idx);
+
+    /// <summary>
+    /// Simultate EEPROM write.
+    /// 
+    /// Write two bits only (16 bits).
+    /// </summary>
+    /// <param name="idx">Index of adress to write.</param>
+    /// <_iValue>The value to write in this EEPROM.</returns>
     static void                 WriteIntEEPROM(int idx, int _iValue);
 };
+
+RECT ArduinoSimulator::ComputeRectLeds(int * _piLeft, int * _piTop, int * _piWidth, int * _piHeight) const
+{
+    int iLeft = 0;
+    int iTop = 0;
+
+    const int WIDTH_LEFT_PANE = 210;
+
+    int iNbLedsWidth = CEngine::Instance().GetRealMatrixWidth();
+    int iNbLedsHeight = CEngine::Instance().GetRealMatrixHeight();
+
+    RECT rect;
+    GetClientRect(m_hWnd, &rect);
+
+
+    int iWidth = (rect.right - rect.left - WIDTH_LEFT_PANE) / (iNbLedsWidth);
+    int iHeight = (rect.bottom - rect.top) / (iNbLedsHeight);
+
+    if (iWidth > iHeight)
+    {
+        iWidth = iHeight = min(iWidth, iHeight);
+        iLeft = WIDTH_LEFT_PANE + ((rect.right - rect.left - WIDTH_LEFT_PANE) - iWidth * iNbLedsWidth) / 2;
+    }
+    else
+    {
+        iWidth = iHeight = min(iWidth, iHeight);
+        iLeft = WIDTH_LEFT_PANE;
+        iTop = ((rect.bottom - rect.top) - iHeight * iNbLedsHeight) / 2;
+    }
+
+    if (_piLeft != nullptr)
+    {
+        *_piLeft = iLeft;
+    }
+    if (_piTop != nullptr)
+    {
+        *_piTop = iTop;
+    }
+    if (_piWidth != nullptr)
+    {
+        *_piWidth = iWidth;
+    }
+    if (_piHeight != nullptr)
+    {
+        *_piHeight = iHeight;
+    }
+
+    RECT rectDisplay = { iLeft, iTop, iLeft + iWidth * iNbLedsWidth, iTop + iNbLedsHeight * iHeight };
+    return rectDisplay;
+}
+
 
 int ArduinoSimulator::ReadByteEEPROM(int idx)
 {
@@ -166,10 +351,6 @@ void ArduinoSimulator::WriteIntEEPROM(int idx, int _iValue)
 }
 
 ArduinoSimulator * ArduinoSimulator::m_pInstance = nullptr;
-void CALLBACK TimerProc(HWND hwnd, UINT uMsg, UINT timerId, DWORD dwTime)
-{
-    ArduinoSimulator::Instance()->OnTimer();
-}
 
 int ArduinoSimulator::GetAnalogValue(uint8_t _iPin) const
 {
@@ -191,14 +372,26 @@ int ArduinoSimulator::StaticGetAnalogValue(void * _pContext, uint8_t _iPin)
     return ((const ArduinoSimulator*)_pContext)->GetAnalogValue(_iPin);
 }
 
+DWORD WINAPI RunEngineThread(LPVOID _lpParameter)
+{
+    // The new thread will start here
+    ArduinoSimulator* pSimulator = (ArduinoSimulator *) _lpParameter;
+    while (!pSimulator->shouldQuit())
+    {
+        loop();
+    }
+    return 0;
+}
+
 ArduinoSimulator::ArduinoSimulator(HINSTANCE _hInstance, HWND _hWnd)
     : m_hWnd(_hWnd)
 {
     m_pInstance = this;
     m_pLeds = nullptr;
+    m_bIsDisplayLedsNumber = false;
 
     // Create engine instance.
-    DEFAULT_CHIPSET<DEFAULT_LED_DATA_PIN, DEFAULT_COLOR_ORDER>::SetSimulator(this);
+    ISimulatorController<DEFAULT_COLOR_ORDER>::SetSimulator(this);
     setAnalogReadFunction(this, ArduinoSimulator::StaticGetAnalogValue);
 
     int iValueBrightness  = ArduinoSimulator::ReadIntEEPROM(EEPROM_ADDRESS_CURRENT_BRIGHTNESS);
@@ -211,25 +404,46 @@ ArduinoSimulator::ArduinoSimulator(HINSTANCE _hInstance, HWND _hWnd)
         ? 1023 - iValueAnimation
         : iValueAnimation;
 
-    m_hWndBrightness = CreateTrackbar(_hInstance, _hWnd, iValueBrightness, 0, 20, 0, 1023, 0, 0);
-    m_hWndAnimation  = CreateTrackbar(_hInstance, _hWnd, iValueAnimation,  0, 100, 0, 1023, 0, 0);
-
-    // Arduino Setup
+    m_hWndBrightness        = CreateTrackbar(_hInstance, _hWnd, ID_TRACKBAR_BRIGHTNESS, iValueBrightness, 0, 20, 0, 1023, 0, 0);
+    m_hWndAnimation         = CreateTrackbar(_hInstance, _hWnd, ID_TRACKBAR_ANIMATION,  iValueAnimation,  0, 100, 0, 1023, 0, 0);
+    m_hWndDisplayLedsNumber = CreateWindowEx(0,                                         // no extended styles 
+                                             L"button",                                 // class name 
+                                             L"Display leds number",                    // title (caption) 
+                                             WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX,   // style 
+                                             0, 180,                                    // position 
+                                             200, 40,                                   // size 
+                                             _hWnd,                                     // parent window 
+                                             (HMENU) ID_CHECKBOX_DISPLAY_LED_INDEX,     // control identifier
+                                             _hInstance,                                // instance 
+                                             NULL);                                     // no WM_CREATE parameter 
     setup();
 
-    m_nIDTimerEvent = 0;
-    if (0 == SetTimer(m_hWnd, m_nIDTimerEvent, 10, (TIMERPROC)&TimerProc))
-    {
-        m_nIDTimerEvent = 0;
-    }
+    // Initialize the critical section
+    InitializeCriticalSection(&m_CriticalSection);
+
+    // Arduino Setup
+    // Create a new thread which will start at the DoStuff function
+    m_hThread = CreateThread(NULL,              // Thread attributes
+                             0,                 // Stack size (0 = use default)
+                             RunEngineThread,   // Thread start address
+                             this,              // Parameter to pass to the thread
+                             0,                 // Creation flags
+                             NULL);             // Thread id
+    m_bMustQuit = (m_hThread == NULL);
 }
 
 ArduinoSimulator::~ArduinoSimulator()
 {
-    if (m_nIDTimerEvent != 0)
+    m_bMustQuit = true;
+    if (m_hThread != NULL)
     {
-        KillTimer(m_hWnd, m_nIDTimerEvent);
+        // Wait for thread to finish execution
+        WaitForSingleObject(m_hThread, INFINITE);
+
+        // Thread handle must be closed when no longer needed
+        CloseHandle(m_hThread);
     }
+    DeleteCriticalSection(&m_CriticalSection);
     CEngine::KillInstance();
     if (m_pLeds != nullptr)
     {
@@ -254,13 +468,44 @@ void ArduinoSimulator::KillInstance()
     }
 }
 
-void ArduinoSimulator::OnTimer()
+CRGB* ArduinoSimulator::GetLeds()
 {
-    loop();
+    return m_pLeds;
 }
 
-void ArduinoSimulator::init()
+bool ArduinoSimulator::IsDisplayLedsNumber() const
 {
+    return m_bIsDisplayLedsNumber;
+}
+
+CRITICAL_SECTION & ArduinoSimulator::GetCriticalSection()
+{
+    return m_CriticalSection;
+}
+
+// Handles button notifications received 
+VOID WINAPI ArduinoSimulator::ButtonNotification(WPARAM wParam,  // Notification (BN_CLICKED)
+                                                 HWND hwnd)      // handle of window 
+{
+    if (HIWORD(wParam) == BN_CLICKED)
+    {
+        if (m_hWndDisplayLedsNumber == hwnd)
+        {
+            switch (IsDlgButtonChecked(m_hWnd, ID_CHECKBOX_DISPLAY_LED_INDEX))
+            {
+                case BST_CHECKED:
+                {
+                    m_bIsDisplayLedsNumber = true;
+                    break;
+                }
+                case BST_UNCHECKED:
+                {
+                    m_bIsDisplayLedsNumber = false;
+                    break;
+                }
+            }
+        }
+    }
 }
 
 // TBNotifications - handles trackbar notifications received 
@@ -305,15 +550,28 @@ VOID WINAPI ArduinoSimulator::TBNotifications(WPARAM wParam,  // wParam of WM_HS
     }
 }
 
-void ArduinoSimulator::showPixels(PixelController<GRB>& pixels)
+void ArduinoSimulator::init()
 {
-    if (m_pLeds != nullptr)
-    {
-        delete[]m_pLeds;
-    }
-    m_pLeds = new CRGB[CEngine::Instance().GetNumLeds()];
-    memmove8(m_pLeds, CEngine::Instance().GetLeds(), sizeof(CRGB) * CEngine::Instance().GetNumLeds());
-    InvalidateRect(m_hWnd, nullptr, false);
+    int iNumLeds = CEngine::Instance().GetRealNumLeds();
+    m_pLeds = new CRGB[iNumLeds];
+    memset(m_pLeds, 0, iNumLeds * sizeof(CRGB)); // Set all to 0 (black)
+    RECT rect = ComputeRectLeds(nullptr, nullptr, nullptr, nullptr);
+    InvalidateRect(m_hWnd, &rect, false);
+}
+
+bool ArduinoSimulator::shouldQuit() const
+{
+    return m_bMustQuit;
+}
+
+void ArduinoSimulator::onShowPixels(PixelController<GRB>& _rPpixels)
+{
+    EnterCriticalSection(&m_CriticalSection);
+    memmove8(m_pLeds, _rPpixels.mData, sizeof(CRGB) * _rPpixels.mLen);
+    LeaveCriticalSection(&m_CriticalSection);
+
+    RECT rect = ComputeRectLeds(nullptr, nullptr, nullptr, nullptr);
+    InvalidateRect(m_hWnd, &rect, false);
 }
 
 #define MAX_LOADSTRING 100
@@ -446,72 +704,142 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         }
         case WM_COMMAND:
         {
-            int wmId = LOWORD(wParam);
-            // Analyse les sélections de menu :
-            switch (wmId)
+            if (lParam != 0)
             {
-            case IDM_ABOUT:
-                DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
+                int wmId = LOWORD(wParam);
+
+                if (HIWORD(wParam) == BN_CLICKED)
+                {
+                    ArduinoSimulator::Instance()->ButtonNotification(wParam, (HWND) lParam);
+                }
+
+                // Analyse les sélections de menu :
+                switch (wmId)
+                {
+                    case IDM_ABOUT:
+                    {
+                        DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
+                        break;
+                    }
+                    case IDM_EXIT:
+                    {
+                        DestroyWindow(hWnd);
+                        break;
+                    }
+                    default:
+                    {
+                        return DefWindowProc(hWnd, message, wParam, lParam);
+                    }
+                }
                 break;
-            case IDM_EXIT:
-                DestroyWindow(hWnd);
-                break;
-            default:
-                return DefWindowProc(hWnd, message, wParam, lParam);
             }
             break;
+
         }
         case WM_PAINT:
         {
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
-            // Dessiner les leds
+            /* Dessiner les leds
             RECT rect;
-            GetClientRect(hWnd, &rect);
-
-            int iLeft = 0;
+            GetClientRect(hWnd, &rect);*/
 
             // From 0 to 255
             double dBrightness = (FastLED.getBrightness() / (double) 255.0);
+            const int WIDTH_LEFT_PANE = 210;
 
+            int iNbLedsWidth  = CEngine::Instance().GetRealMatrixWidth();
+            int iNbLedsHeight = CEngine::Instance().GetRealMatrixHeight();
             if (   ArduinoSimulator::Instance() != nullptr
-                && ArduinoSimulator::Instance()->m_pLeds != nullptr)
+                && ArduinoSimulator::Instance()->GetLeds() != nullptr)
             {
-                int iWidth  = (rect.right - rect.left - 200) / 17;
-                int iHeight = (rect.bottom - rect.top) / 9;
+                EnterCriticalSection(&ArduinoSimulator::Instance()->GetCriticalSection());
 
-                if (iWidth > iHeight)
-                {
-                    iLeft = iWidth - iHeight + 200;
-                }
-                else
-                {
-                    iLeft = 200;
-                }
-                iWidth = iHeight = min(iWidth, iHeight);
-
+                int iLeft = 0;
+                int iTop = 0;
+                int iWidth = 0;
+                int iHeight = 0;
+                RECT rectDisplay = ArduinoSimulator::Instance()->ComputeRectLeds(&iLeft, &iTop, &iWidth, &iHeight);
                 RECT rect = {0, 0, 0, 0};
-                for (int x = 0; x < 16; ++x)
+                for (int x = 0; x < iNbLedsWidth; ++x)
                 {
-                    for (int y = 0; y < 8; ++y)
+                    for (int y = 0; y < iNbLedsHeight; ++y)
                     {
                         rect.left   = iLeft + (x * iWidth);
                         rect.right  = rect.left + iWidth - 1;
-                        rect.top    = (7 - y) * iHeight;
+                        rect.top    = iTop + y * iHeight;
                         rect.bottom = rect.top + iHeight - 1;
 
-                        int iYIndex = y;
-                        if (x % 2 == 1)
+                        int iLedIndex = CEngine::Instance().ComputePositionFromRealXY(x, y);
+                        CEngine::eLedStatus status = CEngine::Instance().GetLedStatusFromRealPosition(x, y);
+
+                        CRGB led(0);
+                        switch (status)
                         {
-                            iYIndex = 7 - iYIndex;
+                            case CEngine::eLedStatusNormal:
+                            {
+                                led = ArduinoSimulator::Instance()->GetLeds()[iLedIndex];
+                                break;
+                            }
+                            case CEngine::eLedStatusIgnored:
+                            {
+                                led = ArduinoSimulator::Instance()->GetLeds()[iLedIndex];
+                                if (x != 0 || y == 0)
+                                {
+                                    rect.left  += (long) (iWidth / 2.0);
+                                    rect.right += (long) (iWidth / 2.0);
+                                }
+                                break;
+                            }
+                            case CEngine::eLedStatusNotExist:
+                            {
+                                continue;
+                            }
                         }
-                        auto led = ArduinoSimulator::Instance()->m_pLeds[iYIndex + x * 8];
                         HBRUSH brush = CreateSolidBrush(RGB(led.r * dBrightness + 0.5, led.g * dBrightness + 0.5, led.b * dBrightness + 0.5));
                         FillRect(hdc, &rect, brush);
+                        if (status == CEngine::eLedStatusIgnored)
+                        {
+                            HPEN pen = CreatePen(PS_SOLID, 2, RGB(0, 0, 255));
+                            HPEN oldPen = (HPEN)SelectObject(hdc, pen);
+                            MoveToEx(hdc, rect.left, rect.top, NULL);
+                            LineTo(hdc, rect.right, rect.bottom);
+                            MoveToEx(hdc, rect.right, rect.top, NULL);
+                            LineTo(hdc, rect.left, rect.bottom);
+                            SelectObject(hdc, oldPen);
+                            DeleteObject(pen);
+                        }
+                        if (ArduinoSimulator::Instance()->IsDisplayLedsNumber())
+                        {
+                            // Display text
+                            auto oldColor = SetTextColor(hdc, COLORREF(RGB(0, 255, 0)));
+                            auto oldBkMode = SetBkMode(hdc, TRANSPARENT);
+                            char szText[4];
+                            szText[3] = 0;
+                            _itoa_s(iLedIndex, szText, 10);
+                            DrawTextA(hdc, szText, (int)strlen(szText), &rect, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+                            SetBkMode(hdc, oldBkMode);
+                            SetTextColor(hdc, oldColor);
+                        }
+
                         DeleteObject(brush);
                     }
                 }
+
+/* Code to verify where is the computed rect used to display leds
+                HPEN pen = CreatePen(PS_SOLID, 1, RGB(0, 255, 0));
+                HPEN oldPen = (HPEN)SelectObject(hdc, pen);
+                MoveToEx(hdc, rectDisplay.left, rectDisplay.top, NULL);
+                LineTo(hdc, rectDisplay.left, rectDisplay.bottom);
+                LineTo(hdc, rectDisplay.right, rectDisplay.bottom);
+                LineTo(hdc, rectDisplay.right, rectDisplay.top);
+                LineTo(hdc, rectDisplay.left, rectDisplay.top);
+                SelectObject(hdc, oldPen);
+                DeleteObject(pen);
+*/
+                LeaveCriticalSection(&ArduinoSimulator::Instance()->GetCriticalSection());
             }
+
             EndPaint(hWnd, &ps);
             break;
         }
@@ -550,7 +878,7 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 }
 
 
-/* Test sur les vecteurs
+/* Vector tests
 class A
 {
 public:

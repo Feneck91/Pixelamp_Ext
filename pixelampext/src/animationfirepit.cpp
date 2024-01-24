@@ -76,7 +76,7 @@ CAnimationFirepit::CFirepitEffectDatas::CFirepitEffectDatas(uint8_t _ui8CurrentA
 void CAnimationFirepit::CFirepitEffectDatas::Initialize()
 {
     m_pArrNoise = new uint8_t[CEngine::Instance().GetNumLeds()];
-    m_pArrHeat = new uint8_t[CEngine::Instance().GetNumLeds()];
+    m_pArrHeat  = new uint8_t[CEngine::Instance().GetNumLeds()];
     m_Pal = LavaColors_p;
 }
 
@@ -169,7 +169,7 @@ void CAnimationFirepit::CFirepitEffectDatas::Animate()
         // draw
         CEngine::Instance().SetLedColor(true, x, kMatrixHeight - 1, false, false, ColorFromPalette(m_Pal, m_pArrNoise[COMPUTEXY(x, 0)]));
         // and fill the lowest line of the heatmap, too
-        m_pArrHeat[CEngine::Instance().ComputePositionFromXY(true, x, kMatrixHeight - 1, false, false)] = m_pArrNoise[COMPUTEXY(x, 0)];
+        m_pArrHeat[CEngine::Instance().ComputePositionFromXY(true, x, kMatrixHeight - 1, false, false, true)] = m_pArrNoise[COMPUTEXY(x, 0)];
     }
 
     // Copy the heatmap one line up for the scrolling.
@@ -177,14 +177,15 @@ void CAnimationFirepit::CFirepitEffectDatas::Animate()
     {
         for (uint8_t x = 0; x < kMatrixWidth; x++)
         {
-            m_pArrHeat[CEngine::Instance().ComputePositionFromXY(true, x, y, false, false)] = m_pArrHeat[CEngine::Instance().ComputePositionFromXY(true, x, y + 1, false, false)];
+            m_pArrHeat[CEngine::Instance().ComputePositionFromXY(true, x, y, false, false, true)] = m_pArrHeat[CEngine::Instance().ComputePositionFromXY(true, x, y + 1, false, false, true)];
         }
     }
 
     // Scale the heatmap values down based on the independent scrolling noise array.
-    for (uint8_t y = 0; y < kMatrixHeight - 1; y++) {
-        for (uint8_t x = 0; x < kMatrixWidth; x++) {
-
+    for (uint8_t y = 0; y < kMatrixHeight - 1; y++)
+    {
+        for (uint8_t x = 0; x < kMatrixWidth; x++)
+        {
             // get data from the calculated noise field
             uint8_t dim = m_pArrNoise[COMPUTEXY(x, y)];
 
@@ -199,7 +200,9 @@ void CAnimationFirepit::CFirepitEffectDatas::Animate()
             dim = 255 - dim;
 
             // here happens the scaling of the heatmap
-            m_pArrHeat[CEngine::Instance().ComputePositionFromXY(true, x, y, false, false)] = scale8(m_pArrHeat[CEngine::Instance().ComputePositionFromXY(true, x, y, false, false)], dim);
+            uint16_t uiLedPosition = CEngine::Instance().ComputePositionFromXY(true, x, y, false, false, true);
+            assert(uiLedPosition < CEngine::Instance().GetNumLeds());
+            m_pArrHeat[uiLedPosition] = scale8(m_pArrHeat[uiLedPosition], dim);
         }
     }
 
@@ -208,7 +211,7 @@ void CAnimationFirepit::CFirepitEffectDatas::Animate()
     {
         for (uint8_t x = 0; x < kMatrixWidth; x++)
         {
-            CEngine::Instance().SetLedColor(true, x, y, false, false, ColorFromPalette(m_Pal, m_pArrHeat[CEngine::Instance().ComputePositionFromXY(true, x, y, false, false)]));
+            CEngine::Instance().SetLedColor(true, x, y, false, false, ColorFromPalette(m_Pal, m_pArrHeat[CEngine::Instance().ComputePositionFromXY(true, x, y, false, false, true)]));
         }
     }
 

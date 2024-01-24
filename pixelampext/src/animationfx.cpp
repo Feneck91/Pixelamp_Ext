@@ -113,9 +113,11 @@ void CAnimationFx::CFxHueRotationDatas::AnimateHue()
     uint8_t kMatrixHeight = CEngine::Instance().GetMatrixHeight();
     uint8_t kMatrixWidth = CEngine::Instance().GetMatrixWidth();
 
-    for (uint8_t y = 0; y < kMatrixWidth; y++)
+    for (uint8_t x = 0; x < kMatrixWidth; x++)
     {
-        fill_solid(&CEngine::Instance().GetLeds()[y * kMatrixHeight], kMatrixHeight, CHSV(m_uiHue + (kMatrixHeight * y), 255, 255));
+        uint16_t uiLedPosition = CEngine::Instance().ComputePositionFromXY(true, x, x % 2 == 0 ? kMatrixHeight - 1 : 0, false, false);
+        //fill_solid(&CEngine::Instance().GetLeds()[x * kMatrixHeight], kMatrixHeight, CHSV(m_uiHue + (kMatrixHeight * x), 255, 255));
+        fill_solid(&CEngine::Instance().GetLeds()[uiLedPosition], kMatrixHeight, CHSV(m_uiHue + (kMatrixHeight * x), 255, 255));
     }
     ++m_uiHue;
 }

@@ -1,49 +1,6 @@
 #include "animationmode.h"
-
-#pragma once
-
-// Default values (used in Init function)
-#define DEFAULT_LED_DATA_PIN                    6
-#define DEFAULT_COLOR_ORDER                     GRB
-#define DEFAULT_CHIPSET                         WS2812
-
-// Width / Height defaults matrix leds
-#define DEFAULT_MATRIX_WIDTH                    16
-#define DEFAULT_MATRIX_HEIGHT                   8
-
-// Port used for brightness and animation
-#define DEFAULT_POTENTIOMETER_BRIGHTNESS        A0
-#define DEFAULT_POTENTIOMETER_ANIMATION         A1
-
-// The leds are arrange in zigzab by default
-#define DEFAULT_ARRANGE_IN_ZIGZAG               true
-
-// Used into ComputePositionFromXY
-#define INVALID_INDEX                           (uint16_t (-1))
-
-#define POT_BRIGHTNESS_MIN                      0
-#define POT_BRIGHTNESS_MAX                      1023
-
-#define MIN_BRIGHTNESS                          0
-#define MAX_BRIGHTNESS                          150 // Can be changed to 255 but ONLY if 8A power supply is possible (not just 4A)
-
-// Indicate the current mode index is not set
-#define INDEX_MODE_NOMODE                       255
-
-// To save current mode into EEPROM
-#define EEPROM_ADDRESS_CURRENT_MODE             0
-#define EEPROM_ADDRESS_INVERT_POT_BRIGHTNESS    1
-#define EEPROM_ADDRESS_INVERT_POT_ANIMATION     2
-#define EEPROM_ADDRESS_MATRIX_DELTA_X           3
-
-// Max durantion to be able to change mode
-#define MAX_TIME_CHANGE_MODE_MS                 2000
-#define VALUE_DELTA_CHANGE_MODE_MAX             70
-#define VALUE_DELTA_CHANGE_MODE_MIN             10
-
-// Animations
-#define POT_ANIMATION_MIN                       0
-#define POT_ANIMATION_MAX                       1023
+#include "pixellampchipset.h"
+#pragma once 
 
 /// <summary>
 /// Engine class that manage all sprites.
@@ -107,6 +64,11 @@ private:
     /// Used when enter SETUP mode.
     /// </summary>
     shared_ptr<CAnimationMode>              m_setupMode;
+
+    /// <summary>
+    /// Pointer on chipset.
+    /// </summary>
+    shared_ptr<PixelLampChipsetBase>        m_pChipset;
 
     /// <summary>
     /// Index of on current animation mode (254 max).
@@ -228,6 +190,22 @@ public:
     uint8_t                     GetMatrixHeight() const;
 
     /// <summary>
+    /// Get the number of led into the matrix (width).
+    /// 
+    /// This is the real value, send to pixel lamps.
+    /// </summary>
+    /// <returns>The number of led into the matrix (width).</returns>
+    uint8_t                     GetRealMatrixWidth() const;
+
+    /// <summary>
+    /// Get the number of led into the matrix (height).
+    /// 
+    /// This is the real value, send to pixel lamps.
+    /// </summary>
+    /// <returns>The number of led into the matrix (height).</returns>
+    uint8_t                     GetRealMatrixHeight() const;
+
+    /// <summary>
     /// Port used to read potentiometer for brightness.
     /// </summary>
     /// <returns>The brightness pin number.</returns>
@@ -254,7 +232,7 @@ public:
     /// </summary>
     /// <param name="_ui8AnimationIndex">Index of animation.</param>
     /// <returns></returns>
-    shared_ptr<CAnimationMode> GetAnimationsAtIndex(uint8_t _ui8AnimationIndex);
+    shared_ptr<CAnimationMode>  GetAnimationsAtIndex(uint8_t _ui8AnimationIndex);
 
     /// <summary>
     /// Get the instance engine.
@@ -279,7 +257,7 @@ public:
     uint8_t                     GetCurrentMatrixDeltaX() const;
 
     /// <summary>
-    /// Set the delta X fos screen display (to have the message at the center of the leds).
+    /// Set the delta X for screen display (to have the message at the center of the leds).
     /// </summary>
     /// <returns>The new value of the delta X matrix Led</returns>
     /// <param name="_bWriteInEEPROM">If true write the value into the EEPROM. Only if the value is changed!</param>
@@ -305,6 +283,12 @@ public:
     /// </summary>
     /// <returns>The width x height leds.</returns>
     uint16_t                    GetNumLeds() const;
+
+    /// <summary>
+    /// Get the real number of leds.
+    /// </summary>
+    /// <returns>The real width x height leds.</returns>
+    uint16_t                    GetRealNumLeds() const;
     
     /// <summary>
     /// Get the content of the leds.
@@ -354,8 +338,48 @@ public:
     /// <param name="_Y">Y position.</param>
     /// <param name="_bWrapX">Wrap X?</param>
     /// <param name="_bWrapY">Wrap Y?</param>
+    /// <param name="_bIgnoreNoSoldering">Used to ignore the no soldering mode. It's used when compute led position for another led buffer that don"t need to compute the real led position using the no soldering mode.</param>
     /// <returns>The led address. INVALID_INDEX if no wrap and index out of led min / max indexes.</returns>
-    uint16_t                    ComputePositionFromXY(bool _bIgnoreMatrixDelta, led_coordinate _X, led_coordinate _Y, bool _bWrapX, bool _bWrapY);
+    uint16_t                    ComputePositionFromXY(bool _bIgnoreMatrixDelta, led_coordinate _X, led_coordinate _Y, bool _bWrapX, bool _bWrapY, bool _bIgnoreNoSoldering = false);
+
+    /// <summary>
+    /// Compute the led address from X,Y (real x / y).
+    /// 
+    /// [0;0] is on top-left-hand corner
+    /// </summary>
+    /// <param name="_X">X position.</param>
+    /// <param name="_Y">Y position.</param>
+    /// <returns>The led address. INVALID_INDEX if no wrap and index out of led min / max indexes.</returns>
+    uint16_t                    ComputePositionFromRealXY(led_coordinate _X, led_coordinate _Y);
+
+    /// <summary>
+    /// Led status for this position.
+    /// </summary>
+    enum eLedStatus
+    {
+        /// <summary>
+        /// Normal led.
+        /// </summary>
+        eLedStatusNormal,
+
+        /// <summary>
+        /// The led is ignored, exist but must stay in black.
+        /// </summary>
+        eLedStatusIgnored,
+
+        /// <summary>
+        /// The led does not exists.
+        /// </summary>
+        eLedStatusNotExist,
+    };
+
+    /// <summary>
+    /// Get the led status for this position.
+    /// </summary>
+    /// <param name="__realPositionX">Real X position, from 0 to GetRealMatrixWidth.</param>
+    /// <param name="_realPositionY">Real Y position, from 0 to GetRealMatrixHeight.</param>
+    /// <returns>The status of the led.</returns>
+    eLedStatus                  GetLedStatusFromRealPosition(led_coordinate _realPositionX, led_coordinate _realPositionY);
 
     /// <summary>
     /// Clear all led.
@@ -446,7 +470,6 @@ public:
     /// </summary>
     virtual void                InitFastLeds() override
     {
-        // Initialize FastLed chipset
-        FastLED.addLeds<Chipset, DataLedPin, ColorOrder>(CEngine::Instance().GetLeds(), CEngine::Instance().GetNumLeds()).setCorrection(Halogen);
+        m_pChipset = new PixelLampChipset<Chipset, DataLedPin, ColorOrder>(GetLeds(), GetRealNumLeds());
     }
 };

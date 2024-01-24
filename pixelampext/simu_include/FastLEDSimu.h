@@ -1028,6 +1028,24 @@ public:
 template <uint8_t DATA_PIN, int T1, int T2, int T3, EOrder RGB_ORDER = RGB, int XTRA0 = 0, bool FLIP = false, int WAIT_TIME = 10>
 class ClocklessController : public CPixelLEDController<RGB_ORDER>
 {
+public:
+    virtual void init()
+    {
+    }
+
+    virtual uint16_t getMaxRefreshRate() const { return 400; }
+
+protected:
+    virtual void showPixels(PixelController<RGB_ORDER>& pixels)
+    {
+        if (pixels.mLen > 0) {
+            showRGBInternal(pixels);
+        }
+    }
+
+    static void /*__attribute__((optimize("O0")))*/  /*__attribute__ ((always_inline))*/  showRGBInternal(PixelController<RGB_ORDER>& pixels)
+    {
+    }
 };
 
 /// WS2812 controller class @ 800 KHz.
@@ -1038,50 +1056,10 @@ class WS2812Controller800Khz : public ClocklessController<DATA_PIN, 2 * FMUL, 5 
 {
 };
 
-template<EOrder RGB_ORDER> class ISimulatorController
-{
-public:
-    virtual void init() = 0;
-    virtual void showPixels(PixelController<RGB_ORDER>& pixels) = 0;
-};
-
 template<uint8_t DATA_PIN, EOrder RGB_ORDER> class WS2812 : public WS2812Controller800Khz<DATA_PIN, RGB_ORDER>
 ///< @copydoc WS2812Controller800Khz
 {
-private:
-    static ISimulatorController<RGB_ORDER> * m_pSimulator;
-
-public:
-    /// <summary>
-    /// Set the simulator.
-    /// </summary>
-    /// <param name="_pSimulator"></param>
-    static void SetSimulator(ISimulatorController<RGB_ORDER> * _pSimulator)
-    {
-        m_pSimulator = _pSimulator;
-    }
-
-protected:
-    /// Initialize the LED controller
-    virtual void init() override
-    {
-        if (m_pSimulator != nullptr)
-        {
-            m_pSimulator->init();
-        }
-    }
-
-    virtual void showPixels(PixelController<RGB_ORDER>&pixels) override
-    {
-        if (m_pSimulator != nullptr)
-        {
-            m_pSimulator->showPixels(pixels);
-        }
-    }
 }; ///< WS2852 controller class. @copyd
-
-template<uint8_t DATA_PIN, EOrder RGB_ORDER>
-    ISimulatorController<RGB_ORDER>* WS2812<DATA_PIN, RGB_ORDER>::m_pSimulator = nullptr;
 
 //=============================================================================================
 //=============================================================================================
