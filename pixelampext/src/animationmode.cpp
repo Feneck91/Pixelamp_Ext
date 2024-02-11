@@ -11,19 +11,21 @@
 //                          CAnimationMode
 // 
 //========================================================================
-CAnimationMode::CAnimationMode(String _strModeText, CRGB _crTextColor, CAnimationBase * _pAnimation, ...)
+CAnimationMode::CAnimationMode(String _strModeText, CRGB _crTextColor)
     : m_strModeText(_strModeText)
     , m_crTextColor(_crTextColor)
     , m_bDisplayMode(true)
 {
+}
+
+CAnimationMode::CAnimationMode(String _strModeText, CRGB _crTextColor, CAnimationBase * _pAnimation, ...)
+    : CAnimationMode(_strModeText, _crTextColor)
+{
     va_list parametersInfos;
     // Initialize the va_list structure
-    va_start(parametersInfos, _pAnimation);
-    while (_pAnimation != nullptr)
-    {
-        m_arrAnimations.push_back(shared_ptr<CAnimationBase>(_pAnimation));
-        _pAnimation = (CAnimationBase *) va_arg(parametersInfos, CAnimationBase *);
-    }
+    va_start(parametersInfos, _crTextColor);
+    InitAnimations(parametersInfos);
+    va_end(parametersInfos);
 }
 
 CAnimationMode::CAnimationMode(const CAnimationMode& _rAnimationMode)
@@ -40,22 +42,42 @@ CAnimationMode::~CAnimationMode()
     m_pAnimationDisplayMode = nullptr;
 }
 
+bool CAnimationMode::IsDisplayingMode() const
+{
+    return m_bDisplayMode;
+}
+
+void CAnimationMode::InitAnimations(va_list _argsAnimations)
+{
+    CAnimationBase* pAnimation = nullptr;
+    do
+    {
+        pAnimation = (CAnimationBase*) va_arg(_argsAnimations, CAnimationBase*);
+        if (pAnimation != nullptr)
+        {
+            m_arrAnimations.push_back(shared_ptr<CAnimationBase>(pAnimation));
+        }
+    }
+    while (pAnimation != nullptr);
+}
+
 bool CAnimationMode::Loop()
 {
-    if (m_bDisplayMode)
+    if (IsDisplayingMode())
     {
         if (m_pAnimationDisplayMode->Loop())
         {
             m_bDisplayMode = false;
             m_pAnimationDisplayMode->Leave();
             m_pAnimationDisplayMode = nullptr;
+            OnEndDisplayModeAnimation();
             if (m_pCurrentAnimation.IsNotNull())
             {
                 m_pCurrentAnimation->Enter();
             }
         }
     }
-    else
+    else if (m_pCurrentAnimation.IsNotNull())
     {
         m_pCurrentAnimation->Loop();
     }
@@ -92,7 +114,7 @@ void CAnimationMode::Leave()
 
 uint16_t CAnimationMode::GetMillisecondWait()
 {
-    if (m_bDisplayMode)
+    if (IsDisplayingMode())
     {
         return m_pAnimationDisplayMode->GetMillisecondWait();
     }
@@ -123,17 +145,17 @@ void CAnimationMode::SetCurrentAnimation(uint16_t _uiCurrentAnimation)
     {
         auto uiNumberAnimation = (*it)->GetNumberAnimations();
         if (uiNumberAnimation <= _uiCurrentAnimation)
-        {
+        {   // Find the correct index animation when several animations are used
             _uiCurrentAnimation -= uiNumberAnimation;
         }
         else
         {
-            if (!m_bDisplayMode && m_pCurrentAnimation.IsNotNull())
+            if (!IsDisplayingMode() && m_pCurrentAnimation.IsNotNull())
             {
                 m_pCurrentAnimation->Leave();
             }
             m_pCurrentAnimation = *it;
-            if (!m_bDisplayMode && m_pCurrentAnimation.IsNotNull())
+            if (!IsDisplayingMode() && m_pCurrentAnimation.IsNotNull())
             {
                 m_pCurrentAnimation->Enter();
             }
@@ -145,10 +167,14 @@ void CAnimationMode::SetCurrentAnimation(uint16_t _uiCurrentAnimation)
 
 bool CAnimationMode::ShouldEraseBetweenAnimations()
 {
-    return m_bDisplayMode
+    return IsDisplayingMode()
         ? false
-        : (!m_bDisplayMode && m_pCurrentAnimation.IsNotNull()
+        : (!IsDisplayingMode() && m_pCurrentAnimation.IsNotNull()
             ? m_pCurrentAnimation->ShouldEraseBetweenAnimations()
             : CAnimationBase::ShouldEraseBetweenAnimations()
           );
+}
+
+void CAnimationMode::OnEndDisplayModeAnimation()
+{
 }

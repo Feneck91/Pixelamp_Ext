@@ -11,6 +11,7 @@ Author:     Feneck91
 #include "include/animationfirepit.h"
 #include "include/animationfx.h"
 #include "include/animationlight.h"
+#include "include/animationrandom.h"
 
 #ifdef SIMULATION
     #ifdef _DEBUG
@@ -27,10 +28,16 @@ void setup()
     CEngineImpl<DEFAULT_CHIPSET, DEFAULT_LED_DATA_PIN, DEFAULT_COLOR_ORDER>::Init(DEFAULT_MATRIX_WIDTH, DEFAULT_MATRIX_HEIGHT, DEFAULT_POTENTIOMETER_BRIGHTNESS, DEFAULT_POTENTIOMETER_ANIMATION, DEFAULT_ARRANGE_IN_ZIGZAG);
 
     // Init Modes & Animations
-    CEngine::Instance().AddAnimationMode(shared_ptr<CAnimationMode>(new CAnimationMode(String("Pacman"),   CRGB::Yellow,        new CAnimationPacMan(), nullptr)));
-    CEngine::Instance().AddAnimationMode(shared_ptr<CAnimationMode>(new CAnimationMode(String("Feux"),     CRGB::Red,           new CAnimationFirework(), new CAnimationFirepit(), nullptr)));
-    CEngine::Instance().AddAnimationMode(shared_ptr<CAnimationMode>(new CAnimationMode(String("Fx"),       CRGB::Aquamarine,    new CAnimationFx(), nullptr)));
-    CEngine::Instance().AddAnimationMode(shared_ptr<CAnimationMode>(new CAnimationMode(String("LumiÃ¨res"), CRGB::White,         new CAnimationLight(), nullptr)));
+    CEngine::Instance().AddAnimationMode(shared_ptr<CAnimationMode>(new CAnimationMode(String("Pacman"),        CRGB::Yellow,       new CAnimationPacMan(),     nullptr)));
+    CEngine::Instance().AddAnimationMode(shared_ptr<CAnimationMode>(new CAnimationMode(String("Feux"),          CRGB::Red,          new CAnimationFirework(),
+                                                                                                                                    new CAnimationFirepit(),    nullptr)));
+    CEngine::Instance().AddAnimationMode(shared_ptr<CAnimationMode>(new CAnimationMode(String("Fx"),            CRGB::Aquamarine,   new CAnimationFx(),         nullptr)));
+    CEngine::Instance().AddAnimationMode(shared_ptr<CAnimationMode>(new CAnimationMode(String("Lumières"),      CRGB::White,        new CAnimationLight(),      nullptr)));
+    CEngine::Instance().AddAnimationMode(shared_ptr<CAnimationMode>(new CAnimationRandom(String("Aléatoire"),   CRGB::DarkSalmon,   new CAnimationPacMan(),
+                                                                                                                                    new CAnimationFirework(),
+                                                                                                                                    new CAnimationFirepit(),
+                                                                                                                                    new CAnimationFx(),         nullptr)));
+    CEngine::Instance().AddAnimationMode(shared_ptr<CAnimationMode>(new CAnimationMode(String("Damier"),        CRGB::White,        new CAnimationLight(true),  nullptr)));
 
     Serial.println("");
     Serial.println("===========================================");

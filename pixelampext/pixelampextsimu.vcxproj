@@ -77,6 +77,7 @@
     <ClInclude Include="include\animationfx.h" />
     <ClInclude Include="include\animationlight.h" />
     <ClInclude Include="include\animationpacman.h" />
+    <ClInclude Include="include\animationrandom.h" />
     <ClInclude Include="include\animationsetup.h" />
     <ClInclude Include="include\enginedefines.h" />
     <ClInclude Include="include\pixellampchipset.h" />
@@ -112,6 +113,7 @@
     <ClCompile Include="src\animationlight.cpp" />
     <ClCompile Include="src\animationmode.cpp" />
     <ClCompile Include="src\animationpacman.cpp" />
+    <ClCompile Include="src\animationrandom.cpp" />
     <ClCompile Include="src\animationsetup.cpp" />
     <ClCompile Include="src\animationtext.cpp" />
     <ClCompile Include="src\engine.cpp" />
