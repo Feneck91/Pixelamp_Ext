@@ -7,13 +7,22 @@
 class CAnimationLight : public CAnimationBase
 {
 private:
+    /// <summary>
+    /// Current color.
+    /// </summary>
     CRGB                                    m_color;
+
+    /// <summary>
+    /// Indicate if is checkboard, used for test.
+    /// </summary>
+    bool                                    m_bIsCheckerBoard;
 
 public:
     /// <summary>
     /// Constructor.
     /// </summary>
-    CAnimationLight();
+    /// <param name="_bIsCheckerBoard">Indicate if is a checker board or not.</param>
+    CAnimationLight(bool _bIsCheckerBoard = false);
 
     /// <summary>
     /// Destructor.

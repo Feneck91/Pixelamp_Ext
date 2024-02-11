@@ -14,8 +14,9 @@
 //                              CAnimationLight
 // 
 //========================================================================
-CAnimationLight::CAnimationLight()
+CAnimationLight::CAnimationLight(bool _bIsCheckerBoard)
     : m_color(255, 255, 255)
+    , m_bIsCheckerBoard(_bIsCheckerBoard)
 {
 }
 
@@ -25,7 +26,21 @@ CAnimationLight::~CAnimationLight()
 
 bool CAnimationLight::Loop()
 {
-    CEngine::Instance().SetAllLedsColor(m_color);
+    if (m_bIsCheckerBoard)
+    {
+        auto rgbBlack = CRGB(0, 0, 0);
+        for (uint8_t uiX = 0; uiX < CEngine::Instance().GetMatrixWidth(); ++uiX)
+        {
+            for (uint8_t uiY = 0; uiY < CEngine::Instance().GetMatrixWidth(); ++uiY)
+            {
+                CEngine::Instance().SetLedColor(true, uiX, uiY, true, true, (uiX + uiY) % 2 == 0 ? m_color : rgbBlack);
+            }
+        }
+    }
+    else
+    {
+        CEngine::Instance().SetAllLedsColor(m_color);
+    }
     FastLED.show();
     return false; // Always false
 }
