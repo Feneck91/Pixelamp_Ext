@@ -18,12 +18,19 @@ Dans chaque mode on a tous les effets du mode en question (Pacman / Fire / etc..
 
 J'ai ajouté du texte défilant pour chaque mode.
 Un setup permet de définir quelques réglages :
-- Le centre de la lampe (au dessus du bouton de réglage de lumière) afin que les animations de texte et réglages soient centrées et correctement visible.
-  Image = ![Image du centre de la lampe](https://github.com/Feneck91/Pixelamp_Ext/edit/main/images/center_lamp.jpg)
+- Le centre de la lampe (au dessus du bouton de réglage de lumière) afin que les animations de texte et réglages soient centrées et correctement visible.<br/>
+  - <ins>Image de sélection du centre de la lampe :</ins><br/>
+    ![Image du centre de la lampe](images/center_lamp.jpg)<br/>
 - Inversion du potentiomètre de choix de la luminosité.
-  Images = ![Potentiomètre de luminosité normal](https://github.com/Feneck91/Pixelamp_Ext/edit/main/images/light_normal.jpg) / ![Potentiomètre de luminosité inversé](https://github.com/Feneck91/Pixelamp_Ext/edit/main/images/light_inverted.jpg)
+  - <ins>Mode normal :</ins><br/>
+    ![Potentiomètre de luminosité normal](images/light_normal.jpg)<br/>
+  - <ins>Mode inversé :</ins><br/>
+    ![Potentiomètre de luminosité inversé](images/light_inverted.jpg)<br/>
 - Inversion du potentiomètre de choix de l'animation.
-  Images = ![Potentiomètre d'animation normal](https://github.com/Feneck91/Pixelamp_Ext/edit/main/images/light_normal.jpg) / ![Potentiomètre d'animation inversé](https://github.com/Feneck91/Pixelamp_Ext/edit/main/images/light_inverted.jpg)
+  - <ins>Mode normal :</ins><br/>
+    ![Potentiomètre d'animation normal](images/animation_normal.jpg)<br/>
+  - <ins>Mode inversé :</ins><br/>
+    ![Potentiomètre d'animation inversé](images/animation_inverted.jpg)<br/>
 Ces choix sont conservés dans l'EEPROM de l'Arduino.
 
 Afin de développer sans avoir l'Arduino, j'ai écris un simulateur de la lampe. C'est pas super propre, et tous les fonctionalités de FastLed ne fonctioneront
