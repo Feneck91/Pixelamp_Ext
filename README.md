@@ -67,20 +67,25 @@ Les commentaires du code sont écris en anglais. J'ai utilisé des classes que j
 Visual Studio est utilisé ainsi que le plugin vMicro (version démo qui ne dure qu'un temps) qui me permet d'accéder à l'Arduino Méga.
 
 ## Constantes à modifier dans le code avant téléversement dans l'Arduino
-Un certain nombre de constantes et de définitions permettent de modifier le comportement du programme.
+Un certain nombre de constantes et de définitions permettent de modifier le comportement du programme.</br>
+Le cablâge et les modifications apportées sont expliqués plus en détails dans la documentation suivante : [Réalisation de la lampe pixel d'Heliox] (make/README.md)<br/>
 - Mode aléatoire (<i>animationrandom.cpp</i>) :<br/>
 Le potentiomètre de choix des animations est utilisé afin de sélectionner la durée de chaque animation. Cette durée est configurable entre RANDOM_MIN_TIME et RANDOM_MAX_TIME.
 Ces valeurs sont actuellement renseignées avec les valeurs suivantes :<br/>
   - <b>RANDOM_MIN_TIME</b> = 10  (10 secondes)
   - <b>RANDOM_MAX_TIME</b> = 600 (10 minutes)
 - Type de câblage (<i>enginedefines.h</i>) :<br/>
-La configuration par défaut définie sur le câblage normal du projet d'Heliox. Or ce câblage est très complexe à réaliser : environ 90 soudures sur le ruban de leds, des soudures qui risquent de se casser et de faire des faux contacts, du collage à la colle chaude des rubans qui n'est pas du plus facile à faire (on se brule, on casse les soudures, ça se décolle, bref une galère).
-Les constantes a définir sont les suivantes :
-<b>NO_SOLDERING_LED</b> : Activer pour passer en mode sans soudure.
-<b>NO_SOLDERING_FIRST_LED_IS_NOT_USED</b> : Ignorer la première LED, c'est la deuxième qui est dans la première case de la lampe. N'est actif que si <b>NO_SOLDERING_LED</b> est activé.
-<b>NO_SOLDERING_LAST_LED_DOES_NOT_EXIST</b> : Ignorer la dernière LED, après la dernière LED, une led supplémentaire est laissée. N'est actif que si <b>NO_SOLDERING_LED</b> est activé.
-Ce cablâge est expliqué plus en détails dans la documentation suivante :
+La configuration par défaut définie sur le câblage normal du projet d'Heliox. Or ce câblage est très complexe à réaliser : environ 90 soudures sur le ruban de leds, des soudures qui risquent de se casser et de faire des faux contacts, du collage à la colle chaude des rubans qui n'est pas du plus facile à faire (on se brule, on casse les soudures, ça se décolle, bref une galère).<br/>
+Les constantes a définir sont les suivantes :<br/>
+  - <b>NO_SOLDERING_LED</b> : Activer pour passer en mode sans soudure.
+  - <b>NO_SOLDERING_FIRST_LED_IS_NOT_USED</b> : Ignorer la première LED, c'est la deuxième qui est dans la première case de la lampe. N'est actif que si <b>NO_SOLDERING_LED</b> est activé.
+  - <b>NO_SOLDERING_LAST_LED_DOES_NOT_EXIST</b> : Ignorer la dernière LED, après la dernière LED, une led supplémentaire est laissée. N'est actif que si <b>NO_SOLDERING_LED</b> est activé.
+- Luminosité maximale (<i>enginedefines.h</i>) :<br/>
+  - <b>MAX_BRIGHTNESS</b> : Mettre 255 si l'alimentation peut fournir au moins 8A, pour la lampe d'Heliox (4A max) laisser la valeur par défaut (150).
 
+## Modifications réalisées pour la réalisation de la lampe Pixel d'Heliox
+Un certain nombre de modifications ont été réalisées afin de rentre la construction de la lampe plus simple. L'alimentation 5V a été revue, de base l'alimentation 4A ne permettant pas d'allumer la lampe en blanc avec 100% de luminosité.
+Les explications sont disponibles dans la documentation suivante : [Réalisation de la lampe pixel d'Heliox] (make/README.md)
 
 ## Commentaires
 Les commentaires suivants ne sont plus complètement d'actualité. Par respect du travail effectué qui m'a servi de base et qui, pour pas mal de parties, est encore présent dans mon code,
