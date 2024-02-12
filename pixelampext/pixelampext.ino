@@ -37,7 +37,7 @@ void setup()
                                                                                                                                     new CAnimationFirework(),
                                                                                                                                     new CAnimationFirepit(),
                                                                                                                                     new CAnimationFx(),         nullptr)));
-    CEngine::Instance().AddAnimationMode(shared_ptr<CAnimationMode>(new CAnimationMode(String("Damier"),        CRGB::White,        new CAnimationLight(true),  nullptr)));
+    //CEngine::Instance().AddAnimationMode(shared_ptr<CAnimationMode>(new CAnimationMode(String("Damier"),        CRGB::White,        new CAnimationLight(true),  nullptr)));
 
     Serial.println("");
     Serial.println("===========================================");
