@@ -19,8 +19,11 @@ Dans chaque mode on a tous les effets du mode en question (Pacman / Fire / etc..
 J'ai ajouté du texte défilant pour chaque mode.
 Un setup permet de définir quelques réglages :
 - Le centre de la lampe (au dessus du bouton de réglage de lumière) afin que les animations de texte et réglages soient centrées et correctement visible.
-- Inversion su potentiomètre de choix de la luminosité.
-- Inversion su potentiomètre de choix de l'animation.
+  Image = ![Image du centre de la lampe](https://github.com/Feneck91/Pixelamp_Ext/edit/main/images/center_lamp.jpg)
+- Inversion du potentiomètre de choix de la luminosité.
+  Images = ![Potentiomètre de luminosité normal](https://github.com/Feneck91/Pixelamp_Ext/edit/main/images/light_normal.jpg) / ![Potentiomètre de luminosité inversé](https://github.com/Feneck91/Pixelamp_Ext/edit/main/images/light_inverted.jpg)
+- Inversion du potentiomètre de choix de l'animation.
+  Images = ![Potentiomètre d'animation normal](https://github.com/Feneck91/Pixelamp_Ext/edit/main/images/light_normal.jpg) / ![Potentiomètre d'animation inversé](https://github.com/Feneck91/Pixelamp_Ext/edit/main/images/light_inverted.jpg)
 Ces choix sont conservés dans l'EEPROM de l'Arduino.
 
 Afin de développer sans avoir l'Arduino, j'ai écris un simulateur de la lampe. C'est pas super propre, et tous les fonctionalités de FastLed ne fonctioneront
