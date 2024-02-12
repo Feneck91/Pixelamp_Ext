@@ -394,18 +394,11 @@ ArduinoSimulator::ArduinoSimulator(HINSTANCE _hInstance, HWND _hWnd)
     ISimulatorController<DEFAULT_COLOR_ORDER>::SetSimulator(this);
     setAnalogReadFunction(this, ArduinoSimulator::StaticGetAnalogValue);
 
-    int iValueBrightness  = ArduinoSimulator::ReadIntEEPROM(EEPROM_ADDRESS_CURRENT_BRIGHTNESS);
-    m_iValueBrightness = (ArduinoSimulator::ReadByteEEPROM(EEPROM_ADDRESS_INVERT_POT_BRIGHTNESS) == 1)
-        ? 1023 - iValueBrightness
-        : iValueBrightness;
+    m_iValueBrightness = ArduinoSimulator::ReadIntEEPROM(EEPROM_ADDRESS_CURRENT_BRIGHTNESS);
+    m_iValueAnimation = ArduinoSimulator::ReadIntEEPROM(EEPROM_ADDRESS_CURRENT_ANIMATION);
 
-    int iValueAnimation  = ArduinoSimulator::ReadIntEEPROM(EEPROM_ADDRESS_CURRENT_ANIMATION);
-    m_iValueAnimation = (ArduinoSimulator::ReadByteEEPROM(EEPROM_ADDRESS_INVERT_POT_ANIMATION) == 1)
-        ? 1023 - iValueAnimation
-        : iValueAnimation;
-
-    m_hWndBrightness        = CreateTrackbar(_hInstance, _hWnd, ID_TRACKBAR_BRIGHTNESS, iValueBrightness, 0, 20, 0, 1023, 0, 0);
-    m_hWndAnimation         = CreateTrackbar(_hInstance, _hWnd, ID_TRACKBAR_ANIMATION,  iValueAnimation,  0, 100, 0, 1023, 0, 0);
+    m_hWndBrightness        = CreateTrackbar(_hInstance, _hWnd, ID_TRACKBAR_BRIGHTNESS, m_iValueBrightness, 0, 20, 0, 1023, 0, 0);
+    m_hWndAnimation         = CreateTrackbar(_hInstance, _hWnd, ID_TRACKBAR_ANIMATION, m_iValueAnimation,   0, 100, 0, 1023, 0, 0);
     m_hWndDisplayLedsNumber = CreateWindowEx(0,                                         // no extended styles 
                                              L"button",                                 // class name 
                                              L"Display leds number",                    // title (caption) 
@@ -529,16 +522,12 @@ VOID WINAPI ArduinoSimulator::TBNotifications(WPARAM wParam,  // wParam of WM_HS
                 if (m_hWndBrightness == hwndTrack)
                 {
                     ArduinoSimulator::WriteIntEEPROM(EEPROM_ADDRESS_CURRENT_BRIGHTNESS, dwPos);
-                    m_iValueBrightness = CEngine::Instance().IsInvertPotBrightness()
-                        ? 1023 - dwPos
-                        : dwPos;
+                    m_iValueBrightness = dwPos;
                 }
                 else if (m_hWndAnimation == hwndTrack)
                 {
                     ArduinoSimulator::WriteIntEEPROM(EEPROM_ADDRESS_CURRENT_ANIMATION, dwPos);
-                    m_iValueAnimation = CEngine::Instance().IsInvertPotAnimation()
-                        ? 1023 - dwPos
-                        : dwPos;
+                    m_iValueAnimation = dwPos;
                 }
             }
             break;
@@ -740,9 +729,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         {
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
-            /* Dessiner les leds
-            RECT rect;
-            GetClientRect(hWnd, &rect);*/
 
             // From 0 to 255
             double dBrightness = (FastLED.getBrightness() / (double) 255.0);
