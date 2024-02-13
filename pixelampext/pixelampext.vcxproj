@@ -71,9 +71,11 @@
     <ClCompile Include="src\animationlight.cpp" />
     <ClCompile Include="src\animationmode.cpp" />
     <ClCompile Include="src\animationpacman.cpp" />
+    <ClCompile Include="src\animationrandom.cpp" />
     <ClCompile Include="src\animationsetup.cpp" />
     <ClCompile Include="src\animationtext.cpp" />
     <ClCompile Include="src\engine.cpp" />
+    <ClCompile Include="src\pixellampchipset.cpp" />
     <ClCompile Include="src\sprite.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -84,6 +86,7 @@
     <ClInclude Include="include\animationlight.h" />
     <ClInclude Include="include\animationmode.h" />
     <ClInclude Include="include\animationpacman.h" />
+    <ClInclude Include="include\animationrandom.h" />
     <ClInclude Include="include\animationsetup.h" />
     <ClInclude Include="include\animationtext.h" />
     <ClInclude Include="include\engine.h" />

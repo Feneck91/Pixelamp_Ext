@@ -86,7 +86,9 @@ public:
 template<template<uint8_t DataLedPin, EOrder ColorOrder> class Chipset, uint8_t DataLedPin, EOrder ColorOrder>
 class PixelLampChipset : public PixelLampChipsetBase
                        , public Chipset<DataLedPin, ColorOrder>
+#ifdef SIMULATION
                        , ISimulatorController<ColorOrder>
+#endif
 {
     /// <summary>
     /// Get number of leds.
@@ -151,6 +153,6 @@ protected:
         {
             ISimulatorController<ColorOrder>::GetSimulator()->onShowPixels(*pPixelController);
         }
-    }
 #endif 
+    }
 };
