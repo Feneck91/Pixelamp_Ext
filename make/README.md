@@ -14,7 +14,7 @@ L'alimentation 4A n'est pas suffisante pour allumer en blanc les 128 leds de la 
 Chaque led consomme donc 0,3W et il y a 128 led dans la lampe soit 0,3 x 128 = 38,4 W sous 5V soit 38,4 / 5 = 7.68 A. C'est presque le double de 4 A.
 L'alimentation de 4A n'est donc pas suffisante. C'est certainement pour cette raison que la luminosité est bridée à 150.<br/>
 
-### Arduino
+### Arduino, modification du schéma
 <ins><b>Le schéma original de Héliox est le suivant :</b></ins><br/>
 ![Schéma original du montage électronique](images/original_schema.jpg)<br/>
 <br/>
@@ -29,3 +29,14 @@ En sortie du convertisseur 12 V -> 5 V, seules les leds sont branchées, rien ne
 Les 2 potentiomètres sont gérés par le 5 V en sortie de la tension régulée de l'Arduino (PIN 5 V) avec que ses références +5 V soit correctes.<br/>
 Le GND peut-être pris sur la pin GND de l'Arduino ou directement à partir de l'alimentation, de toute façon toutes les masses sont interconnectées (le GND de l'Arduino est relié au GND de son alimentation VIN).
 Les masses +12 V (-) et +5 V (-) doivent être reliées ! <b>(attention, ne pas relier les (+), il s'agit bien des deux masses des +12 V et +5 V)</b>.
+
+<ins><b>Attention :</b></ins><br/>
+Les leds sont directement alimentées par le convertisseur 12 V -> 5V qui est capable de fournir 10 A, ce qui est large par rapport à ce qui est demandé par les 128 leds. Attention à ne pas brancher les leds sur la sortie +5 V de l'arduino, celui-ci ne pourrait pas fournir les 8A nécessaires et serait déterioré.
+Ne pas relier le +5 V de l'Ardyuino au + 5 V du convertisseur 12 V -> 5V non plus.
+
+<ins><b>Puissance supplémentaire :</b></ins><br/>
+Le code a été modifié afin de permettre de ne pas couper le ruban led et d'être obligé de réaliser près de 90 (16 x 6) soudures. Ceci est réalisé en perdant une led par rangée qui n'est jamais allumée. Il y a donc 16 rangées qui peuvent contenir une led supplémentaire (+ 1 led encore supplémentaire si avant le ruban on laisse une led et après la dernière led on laisse aussi une led, ceci est configurable dans le code du programme).<br>
+Il y a donc dans le pire des cas : 16 (colonnes) * (8 lignes + 1 led supplémentaire) + 1 led supplémentaire (si 1ère + dernière) soit  16 * 9 + 1 = 145 leds.<br>
+Il y a donc 145 * 0,3 X = 43,5 W (sous 5A) soit 43.5/5 = 8,7 A, la puissance fournie (10 A) est donc suffisante dans le pire des cas.<br/>
+<br/>
+Actuellement, les leds supplémentaires restent noires mais dans l'avenir, peut-être que des évolutions pourront permettre de les allumer (par exemple pour éclairer le bouton du haut (choix des animations) et alimenter en lumière ce bouton s'il est imprimé en matière phosphorescente par exemple).
