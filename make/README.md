@@ -18,6 +18,14 @@ L'alimentation de 4A n'est donc pas suffisante. C'est certainement pour cette ra
 Le schéma original de Héliox est le suivant :<br/>
 ![Schéma original du montage électronique](images/original_schema.jpg)<br/>
 <br/>
-Il présente un problème (voir explication [ici](https://www.locoduino.org/spip.php?article16), en effet l'Arduino a un système de régulation de tension qui doit être correctement utilisé.<br/>
+Il présente un problème (voir explication [ici](https://www.locoduino.org/spip.php?article16)), en effet l'Arduino a un système de régulation de tension qui doit être correctement utilisé.<br/>
 Il est indiqué : <i>VIN ou RAW correspondent à l’entrée du régulateur de tension présent sur la carte. Pour alimenter l’Arduino via cette broche, il faut une alimentation dont la tension est comprise entre 7 et 12V</i>.<br/>
-Or VIN est branché sur le 5 V, normalement l'Arduino ne devrait même pas démarrer; il faut donc brancher le VIN sur le 12V, on va d'ailleurs utiliser le connecteur fait pour ça, celui sous l'entrée USB qui sert à le programmer.
+Or VIN est branché sur le 5 V, normalement l'Arduino ne devrait même pas démarrer; il faut donc brancher le VIN sur le 12V, on va d'ailleurs utiliser le connecteur fait pour ça, celui sous l'entrée USB qui sert à le programmer.<br/>
+<br/>
+<ins><b>Nouveau schéma :</b></ins>
+![Schéma original du montage électronique](images/new_schema.jpg)<br/>
+Avec ce montage, l'Arduino est alimenté en 12V par le bloc d'alimentation, c'est donc l'Arduino qui va réguler le 5 V pour la gestion des potentiomètres.
+En sortie du convertisseur 12 V -> 5 V, seules les leds sont branchées, rien ne va sur l'Arduino et c'est normal.<br/>
+Les 2 potentiomètres sont gérés par le 5 V en sortie de la tension régulée de l'Arduino (PIN 5 V) avec que ses références +5 V soit correctes.<br/>
+Le GND peut-être pris sur la pin GND de l'Arduino ou directement à partir de l'alimentation, de toute façon toutes les masses sont interconnectées (le GND de l'Arduino est relié au GND de son alimentation VIN).
+Les masses +12 V et +5 V doivent être reliées !
