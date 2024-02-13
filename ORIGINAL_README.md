@@ -1,5 +1,6 @@
 # Pixelamp (Commentaires du développeur à l'origine du projet)
 Attention, ceci est laissé par respect de l'auteur mais le code a vraiment beaucoup changé, il est fort possible que vous ne retrouviez que des brides de code dans ce qui est décrit ci-dessous.
+Le code original est disponible [ici](https://drive.google.com/file/d/1V1oVRu5Qm_7Lyr85kFy6UF3OYe4PQe78/view).
 
 ## Généralités
 Code réalisé pour Heliox dans le cadre de la Lampe Pixel, nom de code "pixelamp" durant le dev.
