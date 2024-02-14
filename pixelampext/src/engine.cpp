@@ -41,7 +41,8 @@ CEngine::~CEngine()
     if (m_pLeds != nullptr)
     {
         delete []m_pLeds;
-    }}
+    }
+}
 
 // Get the unique instance.
 CEngine & CEngine::Instance()
@@ -132,6 +133,10 @@ void CEngine::Loop()
         }
         else
         {
+            if (pAnimationMode->ShouldEraseBetweenAnimations())
+            {
+                ClearAllMatrix();
+            }
             pAnimationMode->Loop();
             m_lastTime = millis();
         }
@@ -163,8 +168,13 @@ void CEngine::ChangeCurrentAnimationMode(uint8_t _ui8CurrentAnimationsMode, bool
 {
     if (m_ui8CurrentAnimationsMode != _ui8CurrentAnimationsMode)
     {
-        shared_ptr<CAnimationMode> pAnimationMode = GetAnimationsAtIndex(m_ui8CurrentAnimationsMode);
+        if (m_ui8CurrentAnimationsMode == INDEX_MODE_NOMODE && _ui8CurrentAnimationsMode >= m_arrAnimationsMode.size() && m_arrAnimationsMode.size() != 0)
+        {   // In case of code is changed and number of animation is less than current recorded animation to play
+            // we must put correct index for _ui8CurrentAnimationsMode: take the first one.
+            _ui8CurrentAnimationsMode = 0;
+        }
 
+        shared_ptr<CAnimationMode> pAnimationMode = GetAnimationsAtIndex(m_ui8CurrentAnimationsMode);
         if (pAnimationMode.IsNotNull())
         {
             pAnimationMode->Leave();
@@ -640,10 +650,6 @@ void CEngine::ReadAnimation(bool _bForceNotification)
         if (m_ui8CurrentAnimationsMode < (uint8_t) m_arrAnimationsMode.size())
         {
             GetAnimationsAtIndex(m_ui8CurrentAnimationsMode)->SetCurrentAnimation(m_i16CurrentAnimation);
-            if (GetAnimationsAtIndex(m_ui8CurrentAnimationsMode)->ShouldEraseBetweenAnimations())
-            {
-                ClearAllMatrix();
-            }
         }
     }
 }
