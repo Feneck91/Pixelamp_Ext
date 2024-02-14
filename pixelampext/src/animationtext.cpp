@@ -92,7 +92,7 @@ void CAnimationText::Leave()
 
 uint16_t CAnimationText::GetMillisecondWait()
 {
-    return 250;
+    return 125;
 }
 
 uint16_t CAnimationText::GetNumberAnimations()
