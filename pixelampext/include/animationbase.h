@@ -9,6 +9,11 @@
     #include <EEPROM.h>
 #endif
 
+// Check we are using GDB Debugging and include the additional code
+#ifdef VM_DEBUG_GDB
+    #include "avr8-stub.h"
+#endif
+
 #include "shared_ptr.h"
 
 /// <summary>

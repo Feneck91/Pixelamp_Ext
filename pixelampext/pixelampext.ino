@@ -24,6 +24,10 @@ Author:     Feneck91
  */
 void setup()
 {
+#ifdef VM_DEBUG_GDB
+    debug_init();
+#endif
+
     // Create engine instance.
     CEngineImpl<DEFAULT_CHIPSET, DEFAULT_LED_DATA_PIN, DEFAULT_COLOR_ORDER>::Init(DEFAULT_MATRIX_WIDTH, DEFAULT_MATRIX_HEIGHT, DEFAULT_POTENTIOMETER_BRIGHTNESS, DEFAULT_POTENTIOMETER_ANIMATION, DEFAULT_ARRANGE_IN_ZIGZAG);
 
@@ -32,19 +36,23 @@ void setup()
     CEngine::Instance().AddAnimationMode(shared_ptr<CAnimationMode>(new CAnimationMode(String("Feux"),          CRGB::Red,          new CAnimationFirework(),
                                                                                                                                     new CAnimationFirepit(),    nullptr)));
     CEngine::Instance().AddAnimationMode(shared_ptr<CAnimationMode>(new CAnimationMode(String("Fx"),            CRGB::Aquamarine,   new CAnimationFx(),         nullptr)));
-    CEngine::Instance().AddAnimationMode(shared_ptr<CAnimationMode>(new CAnimationMode(String("Lumières"),      CRGB::White,        new CAnimationLight(),      nullptr)));
-    CEngine::Instance().AddAnimationMode(shared_ptr<CAnimationMode>(new CAnimationRandom(String("Aléatoire"),   CRGB::DarkSalmon,   new CAnimationPacMan(),
+    CEngine::Instance().AddAnimationMode(shared_ptr<CAnimationMode>(new CAnimationMode(String("Lumiï¿½res"),      CRGB::White,        new CAnimationLight(),      nullptr)));
+    CEngine::Instance().AddAnimationMode(shared_ptr<CAnimationMode>(new CAnimationRandom(String("Alï¿½atoire"),   CRGB::DarkSalmon,   new CAnimationPacMan(),
                                                                                                                                     new CAnimationFirework(),
                                                                                                                                     new CAnimationFirepit(),
                                                                                                                                     new CAnimationFx(),         nullptr)));
-    //CEngine::Instance().AddAnimationMode(shared_ptr<CAnimationMode>(new CAnimationMode(String("Damier"),        CRGB::White,        new CAnimationLight(true),  nullptr)));
+//  CEngine::Instance().AddAnimationMode(shared_ptr<CAnimationMode>(new CAnimationMode(String("Damier"), CRGB::Blue, new CAnimationLight(true), nullptr)));
 
+
+
+#ifndef VM_DEBUG_GDB
     Serial.println("");
     Serial.println("===========================================");
     Serial.println("=                                         =");
     Serial.println("=        PixelLamp Extended Program       =");
     Serial.println("=                                         =");
     Serial.println("===========================================");
+#endif
 }
 
 /**

@@ -216,7 +216,9 @@ void CEngine::Init(uint8_t _ui8MatrixWidth, uint8_t _ui8MatrixHeight, uint8_t _u
     SetCurrentMatrixDeltaX(EEPROM.read(EEPROM_ADDRESS_MATRIX_DELTA_X), false);
 
     // Initialize Serial port
+#ifndef VM_DEBUG_GDB
     Serial.begin(115200);
+#endif
 
     // Initialize FastLed infos
     InitFastLeds();
