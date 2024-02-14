@@ -25,7 +25,7 @@ CAnimationRandom::CAnimationRandom(String _strModeText, CRGB _crTextColor, CAnim
     va_list parametersInfos;
     // Initialize the va_list structure
     va_start(parametersInfos, _crTextColor);
-    InitAnimations(parametersInfos);
+    InitAnimations(_pAnimation, parametersInfos);
     va_end(parametersInfos);
 }
 

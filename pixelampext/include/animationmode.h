@@ -75,8 +75,9 @@ protected:
     /// <summary>
     /// Initialize the animation from va_list argument.
     /// </summary>
+    /// <param name="_pFirstAnimation">First animation (mandatory at least one).</param>
     /// <param name="_argsAnimations">va_list argument to get all animations.</param>
-    void                                    InitAnimations(va_list _argsAnimations);
+    void                                    InitAnimations(CAnimationBase* _pFirstAnimation, va_list _argsAnimations);
 
     /// <summary>
     /// Called when text animation ended.

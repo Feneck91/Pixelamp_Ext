@@ -23,8 +23,8 @@ CAnimationMode::CAnimationMode(String _strModeText, CRGB _crTextColor, CAnimatio
 {
     va_list parametersInfos;
     // Initialize the va_list structure
-    va_start(parametersInfos, _crTextColor);
-    InitAnimations(parametersInfos);
+    va_start(parametersInfos, _pAnimation);
+    InitAnimations(_pAnimation, parametersInfos);
     va_end(parametersInfos);
 }
 
@@ -47,16 +47,13 @@ bool CAnimationMode::IsDisplayingMode() const
     return m_bDisplayMode;
 }
 
-void CAnimationMode::InitAnimations(va_list _argsAnimations)
+void CAnimationMode::InitAnimations(CAnimationBase* _pFirstAnimation, va_list _argsAnimations)
 {
-    CAnimationBase* pAnimation = nullptr;
+    CAnimationBase* pAnimation = _pFirstAnimation;
     do
     {
-        pAnimation = (CAnimationBase*) va_arg(_argsAnimations, CAnimationBase*);
-        if (pAnimation != nullptr)
-        {
-            m_arrAnimations.push_back(shared_ptr<CAnimationBase>(pAnimation));
-        }
+        m_arrAnimations.push_back(shared_ptr<CAnimationBase>(pAnimation));
+        pAnimation = (CAnimationBase*)va_arg(_argsAnimations, CAnimationBase*);
     }
     while (pAnimation != nullptr);
 }
