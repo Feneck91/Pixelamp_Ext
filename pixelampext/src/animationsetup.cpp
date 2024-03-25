@@ -232,7 +232,6 @@ bool CAnimationSetup::Loop()
         }
     }
 
-
     // Detect the brightness changes
     if (m_lastTimeBrightnessUpdate == 0 && m_originBrightnessValue != CEngine::Instance().GetCurrentBrightness())
     {
@@ -303,7 +302,7 @@ bool CAnimationSetup::Loop()
     {   // Validate
         if (m_SpriteValidation.IsNull())
         {
-            // The cancel sprite was not created: valition
+            // The cancel sprite was not created: validation
             // Sprite record OK
             ColorReplacement cr;
             cr.AddColorReplacement(ColorReplacement::stColors{ 1, (uint32_t) SETUP_COLOR_VALUE_REGISTERED, });
@@ -429,3 +428,7 @@ void CAnimationSetup::SetCurrentAnimation(uint16_t _uiCurrentAnimation)
     RecordValues();
 }
 
+bool CAnimationSetup::ShouldEraseBetweenAnimations() const
+{
+    return false;
+}

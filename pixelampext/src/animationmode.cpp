@@ -162,7 +162,7 @@ void CAnimationMode::SetCurrentAnimation(uint16_t _uiCurrentAnimation)
     }
 }
 
-bool CAnimationMode::ShouldEraseBetweenAnimations()
+bool CAnimationMode::ShouldEraseBetweenAnimations() const
 {
     return IsDisplayingMode()
         ? false

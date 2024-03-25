@@ -1,4 +1,5 @@
 #include "../include/animationbase.h"
+#include "../include/engine.h"
 
 #ifdef SIMULATION
     #ifdef _DEBUG
@@ -22,6 +23,7 @@ bool CAnimationBase::Loop()
 
 void CAnimationBase::Enter()
 {
+    CEngine::Instance().ClearAllMatrix();
 }
 
 void CAnimationBase::Leave()
@@ -44,7 +46,7 @@ void CAnimationBase::SetCurrentAnimation(uint16_t _uiCurrentAnimation)
     // For the moment, nothing to do
 }
 
-bool CAnimationBase::ShouldEraseBetweenAnimations()
+bool CAnimationBase::ShouldEraseBetweenAnimations() const
 {
     return true;
 }

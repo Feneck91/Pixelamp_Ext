@@ -84,7 +84,7 @@ uint16_t CAnimationLight::GetMillisecondWait()
     return 100;
 }
 
-bool CAnimationLight::ShouldEraseBetweenAnimations()
+bool CAnimationLight::ShouldEraseBetweenAnimations() const
 {
     return false;
 }

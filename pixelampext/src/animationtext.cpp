@@ -30,9 +30,11 @@ const tTextChar* GetCharSpriteInfo(char _cChar);
 // 
 //========================================================================
 
-CAnimationText::CAnimationText(String _strText, CRGB _crTextColor)
+CAnimationText::CAnimationText(String _strText, CRGB _crTextColor, bool _bMove, uint16_t _ui16Duration)
     : m_strText(_strText)
     , m_crTextColor(_crTextColor)
+    , m_bMove(_bMove)
+    , m_ui16Duration(_ui16Duration)
 {
 }
 
@@ -44,19 +46,37 @@ CAnimationText::~CAnimationText()
 bool CAnimationText::Loop()
 {
     CEngine::Instance().ClearAllMatrix();
-    bool bOnePixelBisible = false;
+    bool bOnePixelBisible = (m_ui16Duration != 0); // false if m_ui16Duration is 0 / true (and so has no effect) if duration is set
+    bool bQuitTheLoop     = false;
+
     // Display all sprites
     for (auto it = m_arrSpritesText.begin(); it != m_arrSpritesText.end(); ++it)
     {
         if ((*it)->ShowSprite(false, false, false))
         {
-            bOnePixelBisible = true;
+            bOnePixelBisible = true; // Don't quit animation IF at least one pixel is dîsplayed
         }
-        (*it)->MoveSprite(); // Move to right
+        if (m_bMove)
+        {
+            (*it)->MoveSprite(); // Move
+        }
     }
     FastLED.show();
 
-    return !bOnePixelBisible;
+    if (m_ui16Duration != 0)
+    {
+        if (m_ui16Duration <= GetMillisecondWait())
+        {   // Leave the animation
+            m_ui16Duration = 0;
+            bQuitTheLoop   = true;
+        }
+        else
+        {   // Less time
+            m_ui16Duration -= GetMillisecondWait();
+        }
+    }
+
+    return !bOnePixelBisible || bQuitTheLoop;
 }
 
 void CAnimationText::Enter()
@@ -64,7 +84,8 @@ void CAnimationText::Enter()
     // Call base class
     CAnimationBase::Enter();
 
-    uint8_t io8X = 0;
+    uint8_t ui8X    = 0;
+    uint8_t uiWidth = 0;
 
     for (int iIndex = 0; iIndex < m_strText.length(); ++iIndex)
     {
@@ -74,11 +95,21 @@ void CAnimationText::Enter()
             ColorReplacement cr;
             cr.AddColorReplacement(ColorReplacement::stColors{ 1, (uint32_t) m_crTextColor });
             m_arrSpritesText.push_back(pInfo->rSprite.ToSprite(cr));
-            m_arrSpritesText.back()->m_X += io8X;
+            m_arrSpritesText.back()->m_X += ui8X;
             m_arrSpritesText.back()->m_Y += 1;
-            io8X += 1 + m_arrSpritesText.back()->m_ui8Width;
+            ui8X += 1 + m_arrSpritesText.back()->m_ui8Width;
             m_arrSpritesText.back()->m_i8MxdX = -1;
             m_arrSpritesText.back()->m_i8MxdY = 0;
+            uiWidth += 1 + m_arrSpritesText.back()->m_ui8Width;
+        }
+    }
+    auto val = m_arrSpritesText.front()->m_X;
+    if (!m_bMove)
+    {
+        uint8_t uiDeltaX = (uiWidth - 1) / 2 - 1;
+        for (auto it = m_arrSpritesText.begin(); it != m_arrSpritesText.end(); ++it)
+        {
+            (*it)->MoveSprite(-uiDeltaX, 0); // Move X
         }
     }
 }
@@ -206,7 +237,7 @@ const SpriteDefinition<20> sprite_6 PROGMEM
         0, 1, 1, 0,
         1, 0, 0, 0,
         1, 1, 1, 0,
-        0, 0, 0, 1,
+        1, 0, 0, 1,
         0, 1, 1, 0,
     }
 };
@@ -1009,7 +1040,6 @@ const SpriteDefinition<12> sprite_z PROGMEM
         1, 1, 1,
     }
 };
-
 
 const struct tTextChar g_AllText[] =
 {

@@ -518,7 +518,7 @@ bool CEngine::ReadBrightness()
 {
     bool bHasChangedMode = false;
     // Read brightness from potentiometer
-    int iPotBrightnessValue = analogRead(m_uiPinBrightness);
+    int iPotBrightnessValue = ReadAnalog(m_uiPinBrightness);
     // Convert to Min / Max read value from potentiometer
     iPotBrightnessValue = constrain(iPotBrightnessValue, POT_BRIGHTNESS_MIN, POT_BRIGHTNESS_MAX);
     if (IsInvertPotBrightness())
@@ -632,7 +632,13 @@ bool CEngine::ReadBrightness()
 void CEngine::ReadAnimation(bool _bForceNotification)
 {
     // Read animation from potentiometer
-    int iPotAnimationValue = analogRead(m_uiPinAnimation);
+    int iPotAnimationValue = ReadAnalog(m_uiPinAnimation);
+
+#ifndef VM_DEBUG_GDB
+    Serial.print("Analog pot = ");
+    Serial.println(iPotAnimationValue);
+#endif
+
     // Convert to Min / Max read value from potentiometer
     iPotAnimationValue = constrain(iPotAnimationValue, POT_ANIMATION_MIN, POT_ANIMATION_MAX);
     if (IsInvertPotAnimation())
@@ -652,4 +658,14 @@ void CEngine::ReadAnimation(bool _bForceNotification)
             GetAnimationsAtIndex(m_ui8CurrentAnimationsMode)->SetCurrentAnimation(m_i16CurrentAnimation);
         }
     }
+}
+
+int CEngine::ReadAnalog(uint8_t _ui8Pin)
+{
+    double dSum = 0.0;
+    for (uint8_t i = 0; i < 16; ++i)
+    {
+        dSum += analogRead(_ui8Pin);
+    }
+    return (int)((dSum + 0.5) / 16);
 }

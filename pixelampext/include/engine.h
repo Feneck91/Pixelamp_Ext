@@ -440,6 +440,14 @@ protected:
     ///                                   Used when mode is changed.</param>
     void                        ReadAnimation(bool _bForceNotification);
 
+private:
+    /// <summary>
+    /// Read the analog value from a pin.
+    /// </summary>
+    /// <param name="_ui8Pin">Analog pin to read.</param>
+    /// <returns>The analog value average with several analog read.</returns>
+    int                         ReadAnalog(uint8_t _ui8Pin);
+
     template<template<uint8_t DataLedPin, EOrder ColorOrder> class Chipset, uint8_t DataLedPin, EOrder ColorOrder> friend class CEngineImpl;
 };
 

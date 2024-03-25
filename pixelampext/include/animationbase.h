@@ -77,5 +77,5 @@ public:
     /// Should erade all led when animation change?
     /// </summary>
     /// <returns>Return true by default.</returns>
-    virtual bool                            ShouldEraseBetweenAnimations();
+    virtual bool                            ShouldEraseBetweenAnimations() const;
 };

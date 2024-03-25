@@ -36,14 +36,12 @@ void setup()
     CEngine::Instance().AddAnimationMode(shared_ptr<CAnimationMode>(new CAnimationMode(String("Feux"),          CRGB::Red,          new CAnimationFirework(),
                                                                                                                                     new CAnimationFirepit(),    nullptr)));
     CEngine::Instance().AddAnimationMode(shared_ptr<CAnimationMode>(new CAnimationMode(String("Fx"),            CRGB::Aquamarine,   new CAnimationFx(),         nullptr)));
-    CEngine::Instance().AddAnimationMode(shared_ptr<CAnimationMode>(new CAnimationMode(String("Lumiï¿½res"),      CRGB::White,        new CAnimationLight(),      nullptr)));
-    CEngine::Instance().AddAnimationMode(shared_ptr<CAnimationMode>(new CAnimationRandom(String("Alï¿½atoire"),   CRGB::DarkSalmon,   new CAnimationPacMan(),
+    CEngine::Instance().AddAnimationMode(shared_ptr<CAnimationMode>(new CAnimationMode(String("Lumières"),      CRGB::White,        new CAnimationLight(),      nullptr)));
+    CEngine::Instance().AddAnimationMode(shared_ptr<CAnimationMode>(new CAnimationRandom(String("Aléatoire"),   CRGB::CadetBlue,    new CAnimationPacMan(),
                                                                                                                                     new CAnimationFirework(),
                                                                                                                                     new CAnimationFirepit(),
                                                                                                                                     new CAnimationFx(),         nullptr)));
 //  CEngine::Instance().AddAnimationMode(shared_ptr<CAnimationMode>(new CAnimationMode(String("Damier"), CRGB::Blue, new CAnimationLight(true), nullptr)));
-
-
 
 #ifndef VM_DEBUG_GDB
     Serial.println("");

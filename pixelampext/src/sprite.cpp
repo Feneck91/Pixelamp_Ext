@@ -86,7 +86,7 @@ void CSprite::MoveSprite()
     m_Y += m_i8MxdY;
 }
 
-void CSprite::MoveSprite(uint8_t _i8MxdX, uint8_t _i8MxdY)
+void CSprite::MoveSprite(int8_t _i8MxdX, int8_t _i8MxdY)
 {
     m_X += _i8MxdX;
     m_Y += _i8MxdY;

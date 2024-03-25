@@ -23,13 +23,25 @@ private:
     /// Text color.
     /// </summary>
     CRGB                                    m_crTextColor;
+
+    /// <summary>
+    /// Move the sprite?
+    /// </summary>
+    bool                                    m_bMove;
+
+    /// <summary>
+    /// Duration of animation, 0 if no duration, stop when sprite leave the screen.
+    /// </summary>
+    uint16_t                                m_ui16Duration;
+
 public:
     /// <summary>
     /// Constructor.
     /// </summary>
     /// <param name="_strText">Text to display</param>
     /// <param name="_crTextColor">Text color</param>
-    CAnimationText(String _strText, CRGB _crTextColor);
+    /// <param name="_bMove">Move text or not</param>
+    CAnimationText(String _strText, CRGB _crTextColor, bool _bMove = true, uint16_t _ui16Duration = 0);
 
     /// <summary>
     /// Destructor.
@@ -39,6 +51,7 @@ public:
     /// <summary>
     /// Make the animation.
     /// </summary>
+    /// <returns>true if done, false else.</returns>
     virtual bool                            Loop() override;
 
     /// <summary>

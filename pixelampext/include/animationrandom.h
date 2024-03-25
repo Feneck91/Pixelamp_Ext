@@ -24,6 +24,13 @@ private:
     /// Because random number generator can give several time the same number.
     /// </summary>
     uint16_t                                m_uiCurrentAnimation;
+
+
+    /// <summary>
+    /// Used to display duration text.
+    /// </summary>
+    shared_ptr<CAnimationBase>              m_pAnimationDisplayDuration;
+
 public:
     /// <summary>
     /// Constructor.
@@ -46,6 +53,19 @@ public:
     virtual bool                            Loop() override;
 
     /// <summary>
+    /// Quit animation.
+    /// 
+    /// Used to release and delete all memory not in use.
+    /// </summary>
+    virtual void                            Leave() override;
+
+    /// <summary>
+    /// Get the time between 2 frames.
+    /// </summary>
+    /// <returns>The number of millisecond between 2 frames (2 calls to Loop function).</returns>
+    virtual uint16_t                        GetMillisecondWait() override;
+
+    /// <summary>
     /// Get the number of animations.
     /// </summary>
     /// <returns>The number of differents animation supported by this class.</returns>
@@ -58,6 +78,12 @@ public:
     /// </summary>
     /// <param name="_uiCurrentAnimation">The animation to set.</param>
     virtual void                            SetCurrentAnimation(uint16_t _uiCurrentAnimation) override;
+
+    /// <summary>
+    /// Should erase all led when animation change?
+    /// </summary>
+    /// <returns>Return the value of the current animation that is actually playing.</returns>
+    virtual bool                            ShouldEraseBetweenAnimations() const override;
 protected:
     /// <summary>
     /// Called when text animation ended (title of animation mode).

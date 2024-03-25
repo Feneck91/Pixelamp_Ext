@@ -103,7 +103,7 @@ public:
     /// </summary>
     /// <param name="_i8MxdX">X move.</param>
     /// <param name="_i8MxdY">Y Move.</param>
-    void                        MoveSprite(uint8_t _i8MxdX, uint8_t _i8MxdY);
+    void                        MoveSprite(int8_t _i8MxdX, int8_t _i8MxdY);
 };
 
 /// <summary>

@@ -137,6 +137,6 @@ public:
     /// <summary>
     /// Should erase all led when animation change?
     /// </summary>
-    /// <returns>Return true by default.</returns>
-    virtual bool                            ShouldEraseBetweenAnimations() override;
+    /// <returns>Dependignof the animation currently playing.</returns>
+    virtual bool                            ShouldEraseBetweenAnimations() const override;
 };

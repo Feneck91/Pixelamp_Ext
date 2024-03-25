@@ -110,6 +110,11 @@ public:
     /// <param name="_uiCurrentAnimation">The animation to set.</param>
     virtual void                            SetCurrentAnimation(uint16_t _uiCurrentAnimation) override;
 
+    /// <summary>
+    /// Should erade all led when animation change?
+    /// </summary>
+    /// <returns>Return true by default.</returns>
+    virtual bool                            ShouldEraseBetweenAnimations() const override;
 private:
     /// <summary>
     /// Record values at the begenning of the process to be able to know if the value has changed.
