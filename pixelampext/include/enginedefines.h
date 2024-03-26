@@ -23,7 +23,7 @@
 #define POT_BRIGHTNESS_MAX                      1023
 
 #define MIN_BRIGHTNESS                          0
-#define MAX_BRIGHTNESS                          255 //150 // Can be changed to 255 but ONLY if 8A power supply is possible (not just 4A)
+#define MAX_BRIGHTNESS                          150 // Can be changed to 255 but ONLY if 8A power supply is possible (not just 4A)
 
 // Defines that indicate that the the cable into the lamp of each column is done whitout soldering led (on each row)
 #define NO_SOLDERING_LED
