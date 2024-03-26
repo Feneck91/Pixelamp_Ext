@@ -4,10 +4,15 @@ Attention : n'utiliser <b>QUE</b> les versions tagguées, les autres sont en cou
 
 ## Version (Utiliser les Tags)
 - **1.0** : Première version utilisant le nouveau moteur et les modes (Pacman / Fx / Lumières / etc).
-- **2.0** : (en préparation, fonctionne mais n'est pas terminée) : possibilité de plier le rubant en ignorant une led en haut et en bas (non éclairée et pas dans une case de la lampe).
-Ceci permet d'éviter de couper puis souder le rubant (très long à faire), très complexe a mettre dans la lampe et provoque des cassures, des faux contacts.
-En pliant rubant en haut et en bas, on évite ces soudures et les faux contacts mais il faut laisser une led non utilisée à chaque fois pour que la led suivante soit correctement au milieu de la case.
-Bref, après un échec pour finir la lampe, j'ai commandé un nouveau ruban et j'ai modifié le code pour faire un nouvel essai.
+- **2.0** : Version permettant d'éviter les soudures et la colle chaude pour monter le ruban.
+  - Possibilité de plier le rubant en ignorant une led en haut et en bas (non éclairée et pas dans une case de la lampe).
+  Ceci permet d'éviter de couper puis souder le rubant (très long à faire), très complexe a mettre dans la lampe et provoque des cassures, des faux contacts.
+  En pliant rubant en haut et en bas, on évite ces soudures et les faux contacts mais il faut laisser une led non utilisée à chaque fois pour que la led suivante soit correctement au milieu de la case.
+  Bref, après un échec pour finir la lampe, j'ai commandé un nouveau ruban et j'ai modifié le code pour faire un nouvel essai.
+  - Projet Fusion 360 + STL de clips permettant de clipser le ruban dans les cases de pixels sans être obligé de les coller à la colle chaude.
+  - Ajout d'un mode Aléatoire qui change automatiquement toutes les x secondes (réglage par le potentiomètre du haut).
+  - Correction de problèmes de lecture des pin analogiques, certainement dûe à une alimentation pas très stable.
+
 
 ## Généralités
 Le code original est disponible [ici](https://drive.google.com/file/d/1V1oVRu5Qm_7Lyr85kFy6UF3OYe4PQe78/view).
