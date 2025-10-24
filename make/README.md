@@ -9,7 +9,7 @@ Ci dessous les modifications apportées sur le projet de lampe Pixel d'Heliox.
 
 ## Alimentation
 
-### Puissande nécessaire
+### Puissance nécessaire
 L'alimentation 4 A n'est pas suffisante pour allumer en blanc les 128 leds de la lampe. Le ruban composé de 150 leds est donné pour 45 W soit 45 / 150 = 0,3 W par led.<br/>
 Chaque led consomme donc 0,3 W et il y a 128 led dans la lampe soit 0,3 x 128 = 38,4 W sous 5 V soit 38,4 / 5 = 7.68 A. C'est presque le double de 4 A.
 L'alimentation de 4 A n'est donc pas suffisante. C'est certainement pour cette raison que la luminosité est bridée à 150 (ou pour que les couleurs ne bavent pas d'une case à l'autre).<br/>
